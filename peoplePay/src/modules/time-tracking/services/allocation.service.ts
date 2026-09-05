@@ -63,7 +63,8 @@ export class AllocationService {
         where: { id: approverUserId },
         include: { role: true },
       });
-      if (!approver || !['HR Manager', 'Admin'].includes(approver.role.name)) {
+      const authorized = ['HR Manager', 'HR Payroll User', 'HR Payroll Manager', 'Admin'];
+      if (!approver || !authorized.includes(approver.role.name)) {
         throw new Error('Forbidden: Only HR Manager and above may approve leave allocations.');
       }
     }

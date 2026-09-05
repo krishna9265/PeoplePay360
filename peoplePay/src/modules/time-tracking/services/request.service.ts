@@ -116,7 +116,7 @@ export class TimeOffRequestService {
           where: { id: approverUserId },
           include: { role: true },
         });
-        const authorized = ['HR Manager', 'Admin', 'HR Payroll Manager'];
+        const authorized = ['HR Manager', 'HR Payroll User', 'HR Payroll Manager', 'Admin'];
         if (!approver || !authorized.includes(approver.role.name)) {
           throw new Error('Forbidden: Only HR Manager and above may approve leave requests.');
         }
@@ -240,7 +240,7 @@ export class TimeOffRequestService {
         where: { id: approverUserId },
         include: { role: true },
       });
-      const authorized = ['HR Manager', 'Admin', 'HR Payroll Manager'];
+      const authorized = ['HR Manager', 'HR Payroll User', 'HR Payroll Manager', 'Admin'];
       if (!approver || !authorized.includes(approver.role.name)) {
         throw new Error('Forbidden: Only HR Manager and above may refuse leave requests.');
       }
