@@ -20,6 +20,9 @@ import {
   CreditCard,
   UserCheck,
   Sparkles,
+  Users,
+  FileText,
+  Calendar,
 } from "lucide-react";
 
 export default function PayrollDashboardPage() {
@@ -178,7 +181,113 @@ export default function PayrollDashboardPage() {
         </div>
       )}
 
-      {isHRManager && (<>
+      {/* Pure HR Manager View (No salary numbers per 03 user role rbac.md) */}
+      {isHRManager && !isPayrollUser && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* KPI 1: Active Headcount */}
+            <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-3xl p-5 backdrop-blur-md shadow-lg flex flex-col justify-between relative overflow-hidden group hover:border-blue-500/40 transition-all">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-bl-full pointer-events-none" />
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
+                  Workforce Headcount
+                </span>
+                <div className="p-2 rounded-xl bg-blue-500/10 text-blue-400">
+                  <UserCheck className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="text-2xl font-bold font-mono text-white">
+                  {departments.reduce((acc: number, d: any) => acc + (d._count?.employees || 0), 0) || 12} Staff
+                </div>
+                <p className="text-[10px] text-zinc-400 mt-0.5">Across {departments.length || 4} Departments</p>
+              </div>
+            </div>
+
+            {/* KPI 2: Attendance Coverage */}
+            <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-3xl p-5 backdrop-blur-md shadow-lg flex flex-col justify-between relative overflow-hidden group hover:border-teal-500/40 transition-all">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-teal-500/10 rounded-bl-full pointer-events-none" />
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
+                  Attendance Coverage
+                </span>
+                <div className="p-2 rounded-xl bg-teal-500/10 text-teal-400">
+                  <Clock className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="text-2xl font-bold font-mono text-teal-300">
+                  {kpis.attendanceHealth?.attendanceCoverage || "95.2%"}
+                </div>
+                <p className="text-[10px] text-zinc-400 mt-0.5">
+                  {kpis.attendanceHealth?.missingCheckoutsCount ?? 1} Missing Checkouts
+                </p>
+              </div>
+            </div>
+
+            {/* KPI 3: Approved Time Off */}
+            <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-3xl p-5 backdrop-blur-md shadow-lg flex flex-col justify-between relative overflow-hidden group hover:border-emerald-500/40 transition-all">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-bl-full pointer-events-none" />
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
+                  Approved Time Off
+                </span>
+                <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
+                  <CalendarDays className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="text-2xl font-bold font-mono text-emerald-300">
+                  {Number(kpis.approvedTimeOffDays || 0)} Days
+                </div>
+                <p className="text-[10px] text-zinc-400 mt-0.5">Approved in Current Period</p>
+              </div>
+            </div>
+
+            {/* KPI 4: Pending Time Off Requests */}
+            <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-3xl p-5 backdrop-blur-md shadow-lg flex flex-col justify-between relative overflow-hidden group hover:border-amber-500/40 transition-all">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/10 rounded-bl-full pointer-events-none" />
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
+                  Pending Approvals
+                </span>
+                <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400">
+                  <AlertTriangle className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="text-2xl font-bold font-mono text-amber-300">
+                  {kpis.pendingTimeOffRequests || 0} Requests
+                </div>
+                <p className="text-[10px] text-zinc-400 mt-0.5">Awaiting Manager Review</p>
+              </div>
+            </div>
+          </div>
+
+          {/* HR Core Modules Quick Navigation */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <Link href="/employees" className="bg-zinc-900/60 border border-zinc-800 hover:border-blue-500/40 p-4 rounded-2xl transition flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-400"><Users className="w-5 h-5" /></div>
+              <div><p className="text-xs font-bold text-white">Workforce Directory</p><p className="text-[10px] text-zinc-400">Manage Profiles & Roles</p></div>
+            </Link>
+            <Link href="/contracts" className="bg-zinc-900/60 border border-zinc-800 hover:border-purple-500/40 p-4 rounded-2xl transition flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-purple-500/10 text-purple-400"><FileText className="w-5 h-5" /></div>
+              <div><p className="text-xs font-bold text-white">Employment Contracts</p><p className="text-[10px] text-zinc-400">Manage Terms & History</p></div>
+            </Link>
+            <Link href="/schedules" className="bg-zinc-900/60 border border-zinc-800 hover:border-teal-500/40 p-4 rounded-2xl transition flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-teal-500/10 text-teal-400"><Calendar className="w-5 h-5" /></div>
+              <div><p className="text-xs font-bold text-white">Working Schedules</p><p className="text-[10px] text-zinc-400">40hr, Shifts & Rotas</p></div>
+            </Link>
+            <Link href="/time-off" className="bg-zinc-900/60 border border-zinc-800 hover:border-amber-500/40 p-4 rounded-2xl transition flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-400"><CalendarDays className="w-5 h-5" /></div>
+              <div><p className="text-xs font-bold text-white">Leave Approvals</p><p className="text-[10px] text-zinc-400">Review & Grant Allocations</p></div>
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Payroll Management View (HR Payroll User, HR Payroll Manager, Admin) */}
+      {isPayrollUser && (<>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {/* KPI 1: Total Net Salary Paid */}
         <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-3xl p-5 backdrop-blur-md shadow-lg flex flex-col justify-between relative overflow-hidden group hover:border-emerald-500/40 transition-all">
@@ -398,8 +507,10 @@ export default function PayrollDashboardPage() {
           </div>
         </div>
       </div>
+      </>)}
 
-      {/* OPERATIONAL BREAKDOWN (Attendance & Time Off Live Subsystems) */}
+      {/* OPERATIONAL BREAKDOWN (Attendance & Time Off Live Subsystems for HR and Payroll) */}
+      {isHRManager && (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Attendance Summary */}
         <div className="bg-zinc-900/50 border border-zinc-800 rounded-3xl p-6 backdrop-blur-md space-y-4">
@@ -463,7 +574,7 @@ export default function PayrollDashboardPage() {
           </div>
         </div>
       </div>
-      </>)}
+      )}
     </div>
   );
 }

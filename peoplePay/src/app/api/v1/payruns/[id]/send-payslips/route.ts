@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PayrollService, PayrollDomainError, type EmailGateway } from "@/modules/payroll";
+import { requireRole } from "@/modules/auth/rbac";
 
 const payrollService = new PayrollService();
 
@@ -14,6 +15,14 @@ export async function POST(
   _req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
+  const rbac = await requireRole(["HR Payroll Manager", "Admin"]);
+  if (rbac.error) {
+    return NextResponse.json(
+      { success: false, error: "Forbidden: Only HR Payroll Manager or Admin can bulk send payslips." },
+      { status: rbac.status }
+    );
+  }
+
   try {
     const { id } = await context.params;
     const result = await payrollService.sendPayrunPayslips(id, demoEmailGateway);

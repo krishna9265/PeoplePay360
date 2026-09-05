@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { SalaryConfigurationService, PayrollDomainError } from "@/modules/payroll";
+import { requireRole } from "@/modules/auth/rbac";
 
 export async function GET(req: NextRequest) {
+  const rbac = await requireRole(["HR Payroll User", "HR Payroll Manager", "Admin"]);
+  if (rbac.error) {
+    return NextResponse.json({ success: false, error: "Forbidden: No payroll access for this role." }, { status: rbac.status });
+  }
+
   try {
     const { searchParams } = new URL(req.url);
     const salaryStructureId = searchParams.get("salaryStructureId") || undefined;
@@ -13,6 +19,11 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const rbac = await requireRole(["HR Payroll Manager", "Admin"]);
+  if (rbac.error) {
+    return NextResponse.json({ success: false, error: "Forbidden: Only HR Payroll Manager or Admin can create salary rules." }, { status: rbac.status });
+  }
+
   try {
     const body = await req.json();
     const { salaryStructureId, ...ruleData } = body;

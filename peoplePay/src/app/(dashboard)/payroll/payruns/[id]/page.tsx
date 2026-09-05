@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import {
   ArrowLeft,
   Calculator,
@@ -19,6 +20,7 @@ import {
   RefreshCw,
   FileText,
   BadgeAlert,
+  ShieldAlert,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -26,6 +28,10 @@ export default function PayrunProcessingPage() {
   const params = useParams();
   const router = useRouter();
   const id = params?.id as string;
+
+  const { data: session } = useSession();
+  const userRole = (session?.user as any)?.roleName || "Employee";
+  const isPayrollManager = ["HR Payroll Manager", "Admin"].includes(userRole);
 
   const [payrun, setPayrun] = useState<any>(null);
   const [employees, setEmployees] = useState<any[]>([]);
@@ -218,50 +224,58 @@ export default function PayrunProcessingPage() {
               Status: {payrun.status}
             </span>
 
-            {/* ACTION BUTTONS (08_PAYRUN_STATE_MACHINE.md) */}
-            {(isDraft || isComputed) && (
-              <Button
-                onClick={handleCompute}
-                disabled={actionLoading}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-blue-500/20 py-5"
-              >
-                <Calculator className="w-4 h-4" />
-                {actionLoading ? "Evaluating Rules..." : isComputed ? "Recompute Rules" : "Compute (Run Engine)"}
-              </Button>
-            )}
+            {/* ACTION BUTTONS (08_PAYRUN_STATE_MACHINE.md & 03 user role rbac.md) */}
+            {isPayrollManager ? (
+              <>
+                {(isDraft || isComputed) && (
+                  <Button
+                    onClick={handleCompute}
+                    disabled={actionLoading}
+                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-blue-500/20 py-5"
+                  >
+                    <Calculator className="w-4 h-4" />
+                    {actionLoading ? "Evaluating Rules..." : isComputed ? "Recompute Rules" : "Compute (Run Engine)"}
+                  </Button>
+                )}
 
-            {isComputed && (
-              <Button
-                onClick={handleValidate}
-                disabled={actionLoading}
-                className="bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-blue-500/20 py-5"
-              >
-                <CheckCircle2 className="w-4 h-4" />
-                Validate Batch
-              </Button>
-            )}
+                {isComputed && (
+                  <Button
+                    onClick={handleValidate}
+                    disabled={actionLoading}
+                    className="bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-blue-500/20 py-5"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    Validate Batch
+                  </Button>
+                )}
 
-            {isValidated && (
-              <Button
-                onClick={handleMarkPaid}
-                disabled={actionLoading}
-                className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-emerald-500/20 py-5"
-              >
-                <CheckCircle2 className="w-4 h-4" />
-                Mark Paid
-              </Button>
-            )}
+                {isValidated && (
+                  <Button
+                    onClick={handleMarkPaid}
+                    disabled={actionLoading}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-emerald-500/20 py-5"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    Mark Paid
+                  </Button>
+                )}
 
-            {(isComputed || isValidated || isPaid) && (
-              <Button
-                onClick={handleSendPayslips}
-                disabled={actionLoading}
-                variant="outline"
-                className="border-zinc-700 text-zinc-300 hover:text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 py-5"
-              >
-                <Send className="w-4 h-4 text-purple-400" />
-                Send Payslips
-              </Button>
+                {(isComputed || isValidated || isPaid) && (
+                  <Button
+                    onClick={handleSendPayslips}
+                    disabled={actionLoading}
+                    variant="outline"
+                    className="border-zinc-700 text-zinc-300 hover:text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 py-5"
+                  >
+                    <Send className="w-4 h-4 text-purple-400" />
+                    Send Payslips
+                  </Button>
+                )}
+              </>
+            ) : (
+              <span className="text-[11px] text-zinc-400 font-mono italic px-3 py-1.5 rounded-xl bg-zinc-950 border border-zinc-800">
+                View-Only Payrun (Lifecycle execution reserved for HR Payroll Manager)
+              </span>
             )}
           </div>
         </div>

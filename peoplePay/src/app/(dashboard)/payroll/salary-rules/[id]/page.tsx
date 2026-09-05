@@ -3,13 +3,18 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Sliders, Save, CheckCircle2, AlertCircle } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { ArrowLeft, Sliders, Save, CheckCircle2, AlertCircle, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function SalaryRuleDetailPage() {
   const params = useParams();
   const router = useRouter();
   const id = params?.id as string;
+
+  const { data: session } = useSession();
+  const userRole = (session?.user as any)?.roleName || "Employee";
+  const isPayrollManager = ["HR Payroll Manager", "Admin"].includes(userRole);
 
   const [rule, setRule] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -41,6 +46,7 @@ export default function SalaryRuleDetailPage() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isPayrollManager) return;
     setSaving(true);
     setStatusMsg(null);
     setErrorMsg(null);
@@ -102,6 +108,13 @@ export default function SalaryRuleDetailPage() {
           </span>
         </div>
 
+        {!isPayrollManager && (
+          <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs flex items-center gap-2">
+            <ShieldAlert className="w-4 h-4 shrink-0" />
+            <span>Read-Only View: Modifying salary calculation rules requires HR Payroll Manager or Admin role.</span>
+          </div>
+        )}
+
         {statusMsg && (
           <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4" />
@@ -123,9 +136,10 @@ export default function SalaryRuleDetailPage() {
               <input
                 type="text"
                 required
+                disabled={!isPayrollManager}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 text-zinc-200 outline-none focus:border-blue-500"
+                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 text-zinc-200 outline-none focus:border-blue-500 disabled:opacity-60"
               />
             </div>
             <div>
@@ -143,9 +157,10 @@ export default function SalaryRuleDetailPage() {
                 type="number"
                 required
                 min="1"
+                disabled={!isPayrollManager}
                 value={sequence}
                 onChange={(e) => setSequence(Number(e.target.value))}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 text-zinc-200 outline-none focus:border-blue-500 font-mono"
+                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 text-zinc-200 outline-none focus:border-blue-500 font-mono disabled:opacity-60"
               />
             </div>
             <div>
@@ -163,10 +178,11 @@ export default function SalaryRuleDetailPage() {
             <input
               type="text"
               required
+              disabled={!isPayrollManager}
               value={calcValue}
               onChange={(e) => setCalcValue(e.target.value)}
               placeholder="e.g. BASIC + TRANSPORT or 10 or = Contract.wage"
-              className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-emerald-400 font-mono text-sm outline-none focus:border-blue-500"
+              className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-emerald-400 font-mono text-sm outline-none focus:border-blue-500 disabled:opacity-60"
             />
             <p className="text-[11px] text-zinc-400 mt-1.5 font-mono">
               Supports: arithmetic operators (+, -, *, /), percentage values, and references to earlier sequenced codes (e.g. BASIC, TRANSPORT).
@@ -180,16 +196,18 @@ export default function SalaryRuleDetailPage() {
               onClick={() => router.push("/payroll/salary-rules")}
               className="border-zinc-700 text-zinc-300 rounded-xl text-xs"
             >
-              Cancel
+              {isPayrollManager ? "Cancel" : "Back to Rules"}
             </Button>
-            <Button
-              type="submit"
-              disabled={saving}
-              className="bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-blue-500/20"
-            >
-              <Save className="w-3.5 h-3.5" />
-              {saving ? "Saving..." : "Save Rule Configuration"}
-            </Button>
+            {isPayrollManager && (
+              <Button
+                type="submit"
+                disabled={saving}
+                className="bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-blue-500/20"
+              >
+                <Save className="w-3.5 h-3.5" />
+                {saving ? "Saving..." : "Save Rule Configuration"}
+              </Button>
+            )}
           </div>
         </form>
       </div>

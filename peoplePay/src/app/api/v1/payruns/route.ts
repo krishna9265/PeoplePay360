@@ -3,10 +3,16 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/modules/auth/authOptions";
 import { prisma } from "@/lib/prisma";
 import { PayrollService, SalaryConfigurationService, PayrollDomainError } from "@/modules/payroll";
+import { requireRole } from "@/modules/auth/rbac";
 
 const payrollService = new PayrollService();
 
 export async function GET() {
+  const rbac = await requireRole(["HR Payroll User", "HR Payroll Manager", "Admin"]);
+  if (rbac.error) {
+    return NextResponse.json({ success: false, error: "Forbidden: No payroll access for this role." }, { status: rbac.status });
+  }
+
   try {
     const payruns = await payrollService.listPayruns();
     return NextResponse.json({ success: true, data: payruns });
@@ -16,6 +22,10 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  const rbac = await requireRole(["HR Payroll User", "HR Payroll Manager", "Admin"]);
+  if (rbac.error) {
+    return NextResponse.json({ success: false, error: "Forbidden: No payroll access for this role." }, { status: rbac.status });
+  }
   try {
     let session: any = null;
     try {
