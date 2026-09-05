@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import {
   CalendarDays,
   Plus,
@@ -29,6 +30,13 @@ function TimeOffContent() {
     initialTab === "allocations" ? "allocations" : initialTab === "types" ? "types" : "requests"
   );
   const [employeeFilter, setEmployeeFilter] = useState(initialEmployeeId);
+
+  // Session & RBAC
+  const { data: session } = useSession();
+  const userRole = (session?.user as any)?.roleName || "Employee";
+  const userEmployeeId = (session?.user as any)?.employeeId || "";
+  const isEmployee = userRole === "Employee";
+  const isHRManager = ["HR Manager", "HR Payroll User", "HR Payroll Manager", "Admin"].includes(userRole);
 
   const [requests, setRequests] = useState<any[]>([]);
   const [allocations, setAllocations] = useState<any[]>([]);
@@ -205,11 +213,15 @@ function TimeOffContent() {
   };
 
   const filteredRequests = requests.filter((r) => {
+    // Employee role: only own requests
+    if (isEmployee && userEmployeeId && r.employeeId !== userEmployeeId) return false;
     if (employeeFilter && r.employeeId !== employeeFilter) return false;
     return true;
   });
 
   const filteredAllocations = allocations.filter((a) => {
+    // Employee role: only own allocations
+    if (isEmployee && userEmployeeId && a.employeeId !== userEmployeeId) return false;
     if (employeeFilter && a.employeeId !== employeeFilter) return false;
     return true;
   });
@@ -249,7 +261,7 @@ function TimeOffContent() {
               New Leave Request
             </Button>
           )}
-          {tab === "allocations" && (
+          {tab === "allocations" && isHRManager && (
             <Button
               onClick={() => setNewAllocModal(true)}
               className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-emerald-500/20"
@@ -307,17 +319,19 @@ function TimeOffContent() {
           Leave Allocations ({allocations.length})
         </button>
 
-        <button
-          onClick={() => setTab("types")}
-          className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
-            tab === "types"
-              ? "bg-purple-600/20 text-purple-400 border border-purple-500/30"
-              : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900"
-          }`}
-        >
-          <Layers className="w-4 h-4" />
-          Time Off Types ({types.length})
-        </button>
+        {isHRManager && (
+          <button
+            onClick={() => setTab("types")}
+            className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
+              tab === "types"
+                ? "bg-purple-600/20 text-purple-400 border border-purple-500/30"
+                : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900"
+            }`}
+          >
+            <Layers className="w-4 h-4" />
+            Time Off Types ({types.length})
+          </button>
+        )}
       </div>
 
       {/* TAB 1: REQUESTS */}
@@ -383,7 +397,7 @@ function TimeOffContent() {
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        {isPending ? (
+                        {isPending && isHRManager ? (
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => handleApproveRequest(r.id)}
@@ -402,6 +416,8 @@ function TimeOffContent() {
                               Refuse
                             </button>
                           </div>
+                        ) : isPending ? (
+                          <span className="text-xs text-amber-400 font-mono">Awaiting Review</span>
                         ) : (
                           <span className="text-xs text-zinc-500 font-mono">Archived</span>
                         )}
@@ -475,7 +491,7 @@ function TimeOffContent() {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      {a.status === "Draft" ? (
+                      {a.status === "Draft" && isHRManager ? (
                         <button
                           onClick={() => handleApproveAllocation(a.id)}
                           className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold shadow-sm"

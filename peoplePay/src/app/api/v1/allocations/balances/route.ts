@@ -1,10 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AllocationService } from '@/modules/time-tracking/services/allocation.service';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/modules/auth/authOptions';
 
 export async function GET(req: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+    const userRole = (session?.user as any)?.roleName || 'Employee';
+    const userEmployeeId = (session?.user as any)?.employeeId;
+
     const { searchParams } = new URL(req.url);
-    const employeeId = searchParams.get('employeeId');
+    let employeeId = searchParams.get('employeeId');
+
+    if (userRole === 'Employee' && userEmployeeId) {
+      employeeId = userEmployeeId;
+    }
 
     if (!employeeId) {
       return NextResponse.json(

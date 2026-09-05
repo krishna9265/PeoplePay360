@@ -1,12 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AllocationService } from '@/modules/time-tracking/services/allocation.service';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/modules/auth/authOptions';
 
 export async function GET(req: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+    const userRole = (session?.user as any)?.roleName || 'Employee';
+    const userEmployeeId = (session?.user as any)?.employeeId;
+
     const { searchParams } = new URL(req.url);
-    const employeeId = searchParams.get('employeeId') || undefined;
+    let employeeId = searchParams.get('employeeId') || undefined;
     const timeOffTypeId = searchParams.get('timeOffTypeId') || undefined;
     const status = searchParams.get('status') || undefined;
+
+    // Backend RBAC: Employee role is scoped to their own allocations only
+    if (userRole === 'Employee' && userEmployeeId) {
+      employeeId = userEmployeeId;
+    }
 
     const allocations = await AllocationService.getAllocations({
       employeeId,
@@ -22,6 +33,17 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+    const userRole = (session?.user as any)?.roleName || 'Employee';
+
+    // Backend RBAC: Employees cannot grant allocations
+    if (userRole === 'Employee') {
+      return NextResponse.json(
+        { success: false, error: 'Forbidden: Only HR Managers can grant time off allocations' },
+        { status: 403 }
+      );
+    }
+
     const body = await req.json();
     if (!body.employeeId || !body.timeOffTypeId || body.allocatedAmount === undefined) {
       return NextResponse.json(

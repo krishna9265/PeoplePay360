@@ -25,6 +25,12 @@ import {
 export default function PayrollDashboardPage() {
   const { data: session } = useSession();
 
+  // RBAC scoping
+  const userRole = (session?.user as any)?.roleName || "Employee";
+  const isEmployee = userRole === "Employee";
+  const isPayrollUser = ["HR Payroll User", "HR Payroll Manager", "Admin"].includes(userRole);
+  const isHRManager = ["HR Manager", "HR Payroll User", "HR Payroll Manager", "Admin"].includes(userRole);
+
   const [loading, setLoading] = useState(true);
   const [departments, setDepartments] = useState<any[]>([]);
   const [selectedDept, setSelectedDept] = useState<string>("");
@@ -144,6 +150,35 @@ export default function PayrollDashboardPage() {
       </div>
 
       {/* 5 PRIMARY KPI CARDS (Screen 30 & 17_DEMO_FLOW.md Minute 4:40) */}
+      {/* Employee role sees a simpler personal dashboard */}
+      {isEmployee && (
+        <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-3xl p-8 backdrop-blur-md shadow-xl text-center space-y-4">
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-blue-600 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
+            <UserCheck className="w-8 h-8 text-white" />
+          </div>
+          <h2 className="text-2xl font-bold text-white">Welcome, {session?.user?.email?.split("@")[0] || "Employee"}!</h2>
+          <p className="text-sm text-zinc-400">Your personal employee dashboard. Use the sidebar to check in/out, view your attendance records, or submit time-off requests.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+            <Link href="/attendance" className="bg-zinc-800/80 border border-zinc-700/50 rounded-2xl p-5 hover:border-blue-500/40 transition-all group">
+              <Clock className="w-6 h-6 text-blue-400 mb-2 group-hover:scale-110 transition-transform" />
+              <p className="text-sm font-semibold text-white">My Attendance</p>
+              <p className="text-xs text-zinc-400 mt-1">View your check-in/out history</p>
+            </Link>
+            <Link href="/time-off" className="bg-zinc-800/80 border border-zinc-700/50 rounded-2xl p-5 hover:border-emerald-500/40 transition-all group">
+              <CalendarDays className="w-6 h-6 text-emerald-400 mb-2 group-hover:scale-110 transition-transform" />
+              <p className="text-sm font-semibold text-white">My Time Off</p>
+              <p className="text-xs text-zinc-400 mt-1">Submit leave requests & view balances</p>
+            </Link>
+            <Link href="/time-off?tab=allocations" className="bg-zinc-800/80 border border-zinc-700/50 rounded-2xl p-5 hover:border-purple-500/40 transition-all group">
+              <CreditCard className="w-6 h-6 text-purple-400 mb-2 group-hover:scale-110 transition-transform" />
+              <p className="text-sm font-semibold text-white">Leave Balances</p>
+              <p className="text-xs text-zinc-400 mt-1">Check your remaining leave allocation</p>
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {isHRManager && (<>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {/* KPI 1: Total Net Salary Paid */}
         <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-3xl p-5 backdrop-blur-md shadow-lg flex flex-col justify-between relative overflow-hidden group hover:border-emerald-500/40 transition-all">
@@ -428,6 +463,7 @@ export default function PayrollDashboardPage() {
           </div>
         </div>
       </div>
+      </>)}
     </div>
   );
 }

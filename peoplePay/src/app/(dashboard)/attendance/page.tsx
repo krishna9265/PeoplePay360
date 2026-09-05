@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { AttendanceWidget } from "@/modules/time-tracking/components/AttendanceWidget";
 import {
   Clock,
@@ -21,6 +22,14 @@ function AttendanceContent() {
   const searchParams = useSearchParams();
   const initialEmployeeId = searchParams.get("employeeId") || "";
 
+  // Session & RBAC (BR-ATT-002)
+  const { data: session } = useSession();
+  const userRole = (session?.user as any)?.roleName || "Employee";
+  const userEmployeeId = (session?.user as any)?.employeeId || "";
+  const isEmployee = userRole === "Employee";
+  const isHRManager = ["HR Manager", "HR Payroll User", "HR Payroll Manager", "Admin"].includes(userRole);
+
+
   const [records, setRecords] = useState<any[]>([]);
   const [employees, setEmployees] = useState<any[]>([]);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(initialEmployeeId);
@@ -36,23 +45,28 @@ function AttendanceContent() {
   const [correcting, setCorrecting] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
 
-  // Fetch employees list
+  // Fetch employees list (only for HR Manager+)
   useEffect(() => {
+    if (!isHRManager) return;  // Employee role doesn't need employee list
     fetch("/api/v1/employees")
       .then((r) => r.json())
       .then((data) => {
         if (Array.isArray(data)) setEmployees(data);
       })
       .catch(() => {});
-  }, []);
+  }, [isHRManager]);
 
   const fetchRecords = async () => {
     setLoading(true);
     try {
       let url = "/api/v1/attendance";
       const params = new URLSearchParams();
-      if (selectedEmployeeId) params.append("employeeId", selectedEmployeeId);
-      if (statusFilter) params.append("status", statusFilter);
+      // Employee role: always scope to own records only
+      if (isEmployee && userEmployeeId) {
+        params.append("employeeId", userEmployeeId);
+      } else if (selectedEmployeeId) {
+        params.append("employeeId", selectedEmployeeId);
+      }
       if (exceptionsOnly) params.append("exceptionsOnly", "true");
       if (params.toString()) url += `?${params.toString()}`;
 
@@ -70,7 +84,7 @@ function AttendanceContent() {
 
   useEffect(() => {
     fetchRecords();
-  }, [selectedEmployeeId, statusFilter, exceptionsOnly]);
+  }, [selectedEmployeeId, statusFilter, exceptionsOnly, isEmployee, userEmployeeId]);
 
   const toLocalInputFormat = (dateStr?: string | Date | null) => {
     if (!dateStr) return "";
@@ -201,18 +215,20 @@ function AttendanceContent() {
           <Filter className="w-4 h-4 text-zinc-500" />
           <span className="text-xs font-semibold text-zinc-300">Filter By:</span>
 
-          <select
-            value={selectedEmployeeId}
-            onChange={(e) => setSelectedEmployeeId(e.target.value)}
-            className="px-3 py-1.5 text-xs rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-200 outline-none focus:border-blue-500"
-          >
-            <option value="">All Employees</option>
-            {employees.map((emp) => (
-              <option key={emp.id} value={emp.id}>
-                {emp.fullName}
-              </option>
-            ))}
-          </select>
+          {isHRManager && (
+            <select
+              value={selectedEmployeeId}
+              onChange={(e) => setSelectedEmployeeId(e.target.value)}
+              className="px-3 py-1.5 text-xs rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-200 outline-none focus:border-blue-500"
+            >
+              <option value="">All Employees</option>
+              {employees.map((emp) => (
+                <option key={emp.id} value={emp.id}>
+                  {emp.fullName}
+                </option>
+              ))}
+            </select>
+          )}
 
           <select
             value={statusFilter}
@@ -322,13 +338,15 @@ function AttendanceContent() {
                       )}
                     </td>
                     <td className="px-6 py-4">
-                      <button
-                        onClick={() => openCorrection(r)}
-                        className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition"
-                        title="Correct Attendance (HR Manager+)"
-                      >
-                        <Edit3 className="w-4 h-4" />
-                      </button>
+                      {isHRManager && (
+                        <button
+                          onClick={() => openCorrection(r)}
+                          className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition"
+                          title="Correct Attendance (HR Manager+)"
+                        >
+                          <Edit3 className="w-4 h-4" />
+                        </button>
+                      )}
                     </td>
                   </tr>
                 );

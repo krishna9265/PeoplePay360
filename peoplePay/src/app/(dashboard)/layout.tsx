@@ -29,6 +29,7 @@ export default function DashboardLayout({
   const pathname = usePathname();
 
   const userRole = (session?.user as any)?.roleName || "Employee";
+  const isEmployee = userRole === "Employee";
   const isAdmin = userRole === "Admin";
   const isPayrollUser = ["HR Payroll User", "HR Payroll Manager", "Admin"].includes(userRole);
   const isHRManager = ["HR Manager", "HR Payroll User", "HR Payroll Manager", "Admin"].includes(userRole);
@@ -51,15 +52,15 @@ export default function DashboardLayout({
     {
       title: "Time & Operations",
       items: [
-        { name: "Attendance", href: "/attendance", icon: Clock, visible: true },
-        { name: "Time Off", href: "/time-off", icon: CalendarDays, visible: true },
+        { name: "Attendance", href: "/attendance", icon: Clock, visible: true },  // All roles, but Employee sees own only
+        { name: "Time Off", href: "/time-off", icon: CalendarDays, visible: true },  // All roles, but Employee sees own only
       ],
     },
     {
       title: "Payroll Management",
       items: [
         { name: "Payruns", href: "/payroll/payruns", icon: CreditCard, visible: isPayrollUser },
-        { name: "Payslips", href: "/payroll/payslips", icon: Receipt, visible: true },
+        { name: "Payslips", href: "/payroll/payslips", icon: Receipt, visible: isPayrollUser },
         { name: "Salary Structures", href: "/payroll/salary-structures", icon: Layers, visible: isPayrollUser },
         { name: "Salary Rules", href: "/payroll/salary-rules", icon: Sliders, visible: isPayrollUser },
       ],
