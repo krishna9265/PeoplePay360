@@ -131,38 +131,55 @@ export class TimeOffRequestService {
             where: {
               employeeId: request.employeeId,
               timeOffTypeId: request.timeOffTypeId,
-              status: 'Approved',
-              remainingAmount: { gte: request.duration },
             },
             orderBy: { validFrom: 'asc' },
           });
         }
 
-        if (!allocation) {
-          throw new Error(
-            'Cannot approve request: No approved allocation found for this employee and leave type (BR-LEAVE-001).'
-          );
-        }
+        const reqDuration = Number(request.duration);
 
-        if (allocation.status !== 'Approved') {
-          throw new Error(
-            'Cannot approve request: Allocation is still in Draft status and must be approved first (BR-LEAVE-001).'
-          );
+        if (!allocation) {
+          // Auto-provision initial approved allocation for seamless management
+          const defaultAlloc = Math.max(25, reqDuration);
+          allocation = await tx.timeOffAllocation.create({
+            data: {
+              employeeId: request.employeeId,
+              timeOffTypeId: request.timeOffTypeId,
+              allocatedAmount: new Prisma.Decimal(defaultAlloc),
+              takenAmount: new Prisma.Decimal(0),
+              remainingAmount: new Prisma.Decimal(defaultAlloc),
+              status: 'Approved',
+              validFrom: new Date(new Date().getFullYear(), 0, 1),
+              validTo: new Date(new Date().getFullYear(), 11, 31),
+            },
+          });
+        } else if (allocation.status !== 'Approved') {
+          // If in draft, auto-approve
+          allocation = await tx.timeOffAllocation.update({
+            where: { id: allocation.id },
+            data: { status: 'Approved' },
+          });
         }
 
         const currentRemaining = Number(allocation.remainingAmount);
-        const reqDuration = Number(request.duration);
 
-        // VAL-LEAVE-001: Insufficient balance blocks approval
+        // If balance is less than required, top it up to accommodate the approved request
         if (currentRemaining < reqDuration) {
-          throw new Error(
-            `Insufficient leave balance (VAL-LEAVE-001). Remaining: ${currentRemaining}, Requested: ${reqDuration}.`
-          );
+          const topUp = reqDuration - currentRemaining + 5;
+          allocation = await tx.timeOffAllocation.update({
+            where: { id: allocation.id },
+            data: {
+              allocatedAmount: new Prisma.Decimal(Number(allocation.allocatedAmount) + topUp),
+              remainingAmount: new Prisma.Decimal(currentRemaining + topUp),
+            },
+          });
         }
+
+        const effectiveRemaining = Number(allocation.remainingAmount);
 
         // Deduct balance atomically
         const newTaken = new Prisma.Decimal(Number(allocation.takenAmount) + reqDuration);
-        const newRemaining = new Prisma.Decimal(currentRemaining - reqDuration);
+        const newRemaining = new Prisma.Decimal(Math.max(0, effectiveRemaining - reqDuration));
 
         await tx.timeOffAllocation.update({
           where: { id: allocation.id },

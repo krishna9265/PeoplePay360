@@ -33,7 +33,7 @@ export class PayrunService {
       const contracts = await this.contracts.getApplicableContracts(employeeId, payrun.period);
       if (contracts.length === 0) { warnings.push({ type: "missing_contract", severity: "Blocking", employeeId, message: `No applicable contract found for ${employee.fullName}.` }); continue; }
       if (contracts.length > 1) { warnings.push({ type: "multiple_contracts", severity: "Blocking", employeeId, message: `Multiple applicable contracts found for ${employee.fullName}.` }); continue; }
-      if (await this.repository.hasPayslip(payrun.id, employeeId) && payrun.status !== "Computed") {
+      if (await this.repository.hasPayslip(payrun.id, employeeId) && payrun.status !== "Draft" && payrun.status !== "Computed") {
         warnings.push({ type: "duplicate_payslip", severity: "Blocking", employeeId, message: `A payslip already exists for ${employee.fullName}.` }); continue;
       }
       const [workedDays, unpaidLeaveDays] = await Promise.all([
