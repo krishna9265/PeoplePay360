@@ -139,8 +139,7 @@ async function main() {
     { name: "Provident Fund (EPF)", code: "EPF", sequence: 50, calculationType: "Formula", calculationValue: "BASIC * 0.12", categoryId: catIds["Deductions"] },
     { name: "Professional Tax", code: "PTAX", sequence: 60, calculationType: "Fixed", calculationValue: "200", categoryId: catIds["Deductions"] },
     { name: "TDS / Income Tax", code: "TDS", sequence: 70, calculationType: "Formula", calculationValue: "GROSS * 0.05", categoryId: catIds["Deductions"] },
-    { name: "Loss of Pay (LOP)", code: "LOP", sequence: 75, calculationType: "Formula", calculationValue: "(BASIC / 30) * UNPAID_LEAVE_DAYS", categoryId: catIds["Deductions"] },
-    { name: "Net Salary", code: "NET", sequence: 80, calculationType: "Formula", calculationValue: "GROSS - EPF - PTAX - TDS - LOP", categoryId: catIds["Net"] },
+    { name: "Net Salary", code: "NET", sequence: 80, calculationType: "Formula", calculationValue: "GROSS - EPF - PTAX - TDS", categoryId: catIds["Net"] },
   ];
 
   for (const r of rulesData) {
@@ -159,7 +158,7 @@ async function main() {
       },
     });
   }
-  console.log("✓ Salary structure and 9 sequenced rules seeded.");
+  console.log("✓ Salary structure and 8 sequenced rules seeded.");
 
   // 5. Time Off Types
   const toAnnual = await prisma.timeOffType.upsert({
@@ -334,15 +333,6 @@ async function main() {
           salaryStructureId: structure.id,
         },
       });
-    } else {
-      await prisma.contract.update({
-        where: { id: existingContract.id },
-        data: {
-          salaryStructureId: structure.id,
-          wage: emp.wage,
-          workingScheduleId: schedule40.id,
-        },
-      });
     }
   }
   console.log(`✓ Seeded ${allEmpIds.length} Employees, Users, and Active Contracts.`);
@@ -382,23 +372,8 @@ async function main() {
         },
       });
     }
-
-    // Seed sample approved Unpaid Leave (Loss of Pay) for ~20% of employees + key demo employee
-    if (Math.random() < 0.20 || empEmail === "employee@peoplepay360.com") {
-      await prisma.timeOffRequest.create({
-        data: {
-          employeeId: empInfo.id,
-          timeOffTypeId: toUnpaid.id,
-          startDate: new Date("2026-09-02"),
-          endDate: new Date("2026-09-04"),
-          duration: 3,
-          status: "Approved",
-          reason: "Unpaid personal leave (Loss of Pay)",
-        },
-      });
-    }
   }
-  console.log("✓ 100+ Time-Off allocations & realistic requests (including approved Unpaid Leave) seeded.");
+  console.log("✓ 100+ Time-Off allocations & realistic requests seeded.");
 
   // 8. Attendance Records (Last 14 days for all employees = 1400+ attendance records)
   console.log("🌱 Seeding 1,000+ Attendance Logs across active workdays...");

@@ -66,7 +66,6 @@ export function generatePayslipPdf(payslip: ComputedPayslip): Uint8Array {
 
   const payrunName = payslip.payrun?.name || "Regular Monthly Payrun";
   const workedDays = Number(payslip.workedDays || 22);
-  const unpaidLeaveDays = Number(payslip.unpaidLeaveDays || 0);
   const grossTotal = Number(payslip.grossTotal || 0);
   const netTotal = Number(payslip.netTotal || 0);
   const totalDeductions = Math.max(0, grossTotal - netTotal);
@@ -203,8 +202,7 @@ export function generatePayslipPdf(payslip: ComputedPayslip): Uint8Array {
   stream.push(`(${escapePdfText("Worked Days:")}) Tj`);
   stream.push("/F1 9 Tf");
   stream.push("90 0 Td");
-  const workedDaysText = unpaidLeaveDays > 0 ? `${workedDays} Days (${unpaidLeaveDays} LOP)` : `${workedDays} Days`;
-  stream.push(`(${escapePdfText(workedDaysText)}) Tj`);
+  stream.push(`(${escapePdfText(`${workedDays} Days`)}) Tj`);
   stream.push("ET");
 
   stream.push("BT");

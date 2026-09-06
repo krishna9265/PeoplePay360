@@ -255,7 +255,6 @@ model Payslip {
   periodStart      DateTime
   periodEnd        DateTime
   workedDays       Decimal            @db.Decimal(10, 2)
-  unpaidLeaveDays  Decimal            @default(0) @db.Decimal(10, 2)
   status           String             // Draft, Computed, Validated, Paid
   grossTotal       Decimal            @db.Decimal(10, 2)
   netTotal         Decimal            @db.Decimal(10, 2)

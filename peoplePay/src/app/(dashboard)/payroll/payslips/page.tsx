@@ -452,15 +452,8 @@ export default function PayslipsListPage() {
 
                     {/* Period */}
                     <td className="px-6 py-4 text-xs font-mono text-zinc-300">
-                      <div>
-                        {new Date(p.periodStart).toLocaleDateString()} -{" "}
-                        {new Date(p.periodEnd).toLocaleDateString()}
-                      </div>
-                      {Number(p.unpaidLeaveDays || 0) > 0 && (
-                        <span className="text-[10px] font-semibold text-rose-400 bg-rose-500/10 px-1.5 py-0.5 rounded border border-rose-500/20 inline-block mt-1 font-sans">
-                          {Number(p.unpaidLeaveDays)}d Unpaid LOP
-                        </span>
-                      )}
+                      {new Date(p.periodStart).toLocaleDateString()} -{" "}
+                      {new Date(p.periodEnd).toLocaleDateString()}
                     </td>
 
                     {/* Gross */}

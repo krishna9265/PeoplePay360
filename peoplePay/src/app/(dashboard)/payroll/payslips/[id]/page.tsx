@@ -228,14 +228,6 @@ export default function PayslipDetailPage() {
           </div>
 
           <div>
-            <span className="text-zinc-400 uppercase text-[10px] font-semibold block">Unpaid Leave (LOP)</span>
-            <span className={`font-bold mt-1 block font-mono text-sm ${Number(payslip.unpaidLeaveDays || 0) > 0 ? 'text-red-400' : 'text-emerald-400'}`}>
-              {Number(payslip.unpaidLeaveDays || 0)} Days
-            </span>
-            <span className="text-zinc-400 text-[11px]">{Number(payslip.unpaidLeaveDays || 0) > 0 ? 'Affects Net Pay' : 'No Deduction'}</span>
-          </div>
-
-          <div>
             <span className="text-zinc-400 uppercase text-[10px] font-semibold block">Contract</span>
             <span className="font-bold text-white mt-1 block truncate">
               {payslip.contract?.name || "Applicable Contract"}

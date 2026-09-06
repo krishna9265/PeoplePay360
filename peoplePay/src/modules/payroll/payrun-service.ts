@@ -33,10 +33,6 @@ export class PayrunService {
       const contracts = await this.contracts.getApplicableContracts(employeeId, payrun.period);
       if (contracts.length === 0) { warnings.push({ type: "missing_contract", severity: "Blocking", employeeId, message: `No applicable contract found for ${employee.fullName}.` }); continue; }
       if (contracts.length > 1) { warnings.push({ type: "multiple_contracts", severity: "Blocking", employeeId, message: `Multiple applicable contracts found for ${employee.fullName}.` }); continue; }
-      if (contracts[0].salaryStructureId !== payrun.salaryStructure.id) {
-        warnings.push({ type: "structure_mismatch", severity: "Blocking", employeeId, message: `Applicable contract structure for ${employee.fullName} does not match the Payrun salary structure.` });
-        continue;
-      }
       if (await this.repository.hasPayslip(payrun.id, employeeId) && payrun.status !== "Draft" && payrun.status !== "Computed") {
         warnings.push({ type: "duplicate_payslip", severity: "Blocking", employeeId, message: `A payslip already exists for ${employee.fullName}.` }); continue;
       }

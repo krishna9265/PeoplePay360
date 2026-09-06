@@ -51,8 +51,6 @@ export function validateRules(rules: SalaryRuleInput[]): SalaryRuleInput[] {
 function evaluateFormula(expression: string, context: RuleContext): number {
   const tokenPattern = /\s*([A-Z][A-Z0-9_]*|\d+(?:\.\d+)?|[()+\-*/])\s*/gy;
   const tokens: string[] = [];
-  // Pre-replace Contract.wage -> CONTRACT_WAGE so the tokeniser handles it
-  expression = expression.replace(/Contract\.wage/gi, "CONTRACT_WAGE");
   let index = 0;
   while (index < expression.length) {
     tokenPattern.lastIndex = index;
@@ -107,26 +105,14 @@ function evaluateFormula(expression: string, context: RuleContext): number {
 }
 
 export function evaluateRule(rule: SalaryRuleInput, context: RuleContext, contractWage: DecimalValue): DecimalValue {
-  // Inject CONTRACT_WAGE so formulas and Fixed expressions can reference it
-  context.CONTRACT_WAGE = contractWage;
   let value: number;
   switch (rule.calculationType) {
-    case "Fixed": {
-      const trimmed = rule.calculationValue.trim();
-      // Direct Contract.wage conventions
-      if (["Contract.wage", "= Contract.wage"].includes(trimmed)) {
-        value = contractWage;
-      }
-      // If the Fixed value contains "Contract.wage" as part of an expression, normalise and evaluate as formula
-      else if (trimmed.includes("Contract.wage") || trimmed.replace(/^=\s*/, "").includes("CONTRACT_WAGE")) {
-        const expression = trimmed.replace(/^=\s*/, "").replace(/Contract\.wage/gi, "CONTRACT_WAGE");
-        value = evaluateFormula(expression, context);
-      }
-      else {
-        value = parseNumber(trimmed, "Fixed rule value");
-      }
+    case "Fixed":
+      // BASIC = Contract.wage is the documented seed-data convention.
+      value = ["Contract.wage", "= Contract.wage"].includes(rule.calculationValue.trim())
+        ? contractWage
+        : parseNumber(rule.calculationValue, "Fixed rule value");
       break;
-    }
     case "Percentage": {
       const { percentage, baseRuleCode } = parsePercentage(rule.calculationValue);
       const base = context[baseRuleCode];
@@ -134,12 +120,7 @@ export function evaluateRule(rule: SalaryRuleInput, context: RuleContext, contra
       value = base * (percentage / 100);
       break;
     }
-    case "Formula": {
-      // Normalise Contract.wage references inside formulas too
-      const expression = rule.calculationValue.replace(/Contract\.wage/gi, "CONTRACT_WAGE");
-      value = evaluateFormula(expression, context);
-      break;
-    }
+    case "Formula": value = evaluateFormula(rule.calculationValue, context); break;
     default: throw new PayrollDomainError("Unsupported salary rule calculation type.", "unsupported_rule_type");
   }
   return roundMoney(value);
