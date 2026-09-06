@@ -32,7 +32,13 @@ import {
   ChevronDown,
   Cpu,
   Fingerprint,
-  Briefcase
+  Briefcase,
+  Activity,
+  CheckCircle,
+  Database,
+  Calculator,
+  RefreshCw,
+  Coins
 } from "lucide-react";
 
 export default function LandingPage() {
@@ -42,12 +48,11 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-[#07090e] text-zinc-100 selection:bg-emerald-500/30 selection:text-emerald-200 overflow-x-hidden font-sans">
-      {/* Precision Ambient Glows & Grid Mesh */}
+      {/* Precision Ambient Glows & Dynamic Grid Mesh */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-[-10%] left-[20%] w-[650px] h-[650px] bg-emerald-500/10 rounded-full blur-[150px]" />
         <div className="absolute top-[30%] right-[-5%] w-[600px] h-[600px] bg-indigo-600/10 rounded-full blur-[150px]" />
         <div className="absolute bottom-[10%] left-[-10%] w-[750px] h-[750px] bg-blue-600/10 rounded-full blur-[180px]" />
-        {/* Subtle grid pattern */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
       </div>
 
@@ -76,10 +81,10 @@ export default function LandingPage() {
 
           {/* Nav Links */}
           <nav className="hidden md:flex items-center gap-8 text-xs font-semibold text-zinc-300 tracking-wide">
-            <a href="#features" className="hover:text-emerald-400 transition-colors">Features</a>
+            <a href="#pipeline" className="hover:text-emerald-400 transition-colors">Pipeline</a>
             <a href="#solutions" className="hover:text-emerald-400 transition-colors">HR Solutions</a>
             <a href="#interactive" className="hover:text-emerald-400 transition-colors">Architecture</a>
-            <a href="#roles" className="hover:text-emerald-400 transition-colors">Demo Roles</a>
+            <a href="#roles" className="hover:text-emerald-400 transition-colors">5 Demo Roles</a>
             <a href="#pricing" className="hover:text-emerald-400 transition-colors">Pricing</a>
           </nav>
 
@@ -114,9 +119,9 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* Hero Section */}
+      {/* Hero Section with Moving Animated Illustrations */}
       <section className="relative z-10 pt-16 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="text-center space-y-6 max-w-4xl mx-auto">
+        <div className="text-center space-y-6 max-w-4xl mx-auto relative">
           {/* Neumorphic Extruded Capsule */}
           <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-zinc-900/90 border border-white/10 text-emerald-300 text-xs font-semibold shadow-[0_4px_16px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.15)]">
             <Sparkles className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
@@ -135,7 +140,7 @@ export default function LandingPage() {
 
           {/* Subtitle */}
           <p className="text-base sm:text-lg text-zinc-400 max-w-2xl mx-auto leading-relaxed">
-            Eliminate payroll errors, manual calculations, and compliance headaches. PeoplePay360 orchestrates salary rule sequence pipelines, biometric clock-in attendance, and dynamic leave balances in one unified workspace.
+            Eliminate payroll errors and manual computations. PeoplePay360 orchestrates salary rule sequence pipelines, biometric attendance synchronization, dynamic leave balances, and batch PDF dispatch.
           </p>
 
           {/* Dual Skeuomorphic CTAs */}
@@ -174,11 +179,69 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Skeuomorphic 3D Mockup Container */}
-        <div className="mt-14 relative mx-auto max-w-5xl">
-          <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-indigo-600 rounded-[2.5rem] blur-2xl opacity-25 animate-tilt" />
+        {/* Central Moving 3D Interactive Ecosystem Container */}
+        <div className="mt-16 relative mx-auto max-w-6xl">
+          {/* Animated Rotating Orbital Rings */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[720px] h-[720px] rounded-full border border-emerald-500/10 animate-spin-slow pointer-events-none hidden lg:block" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] rounded-full border border-indigo-500/10 animate-spin-reverse pointer-events-none hidden lg:block" />
+
+          {/* 4 Floating Animated Micro-Cards around Hero */}
           
-          <div className="relative rounded-[2rem] bg-[#0c0f17]/90 border border-white/10 p-5 sm:p-7 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.15)] backdrop-blur-2xl">
+          {/* Floating Card 1: Top-Left (Rule Engine Pipeline) */}
+          <div className="absolute -top-10 -left-6 z-20 hidden lg:flex items-center gap-3 p-3.5 rounded-2xl bg-zinc-900/95 border border-emerald-500/40 shadow-[0_16px_32px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.2)] animate-float-slow backdrop-blur-xl">
+            <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <Calculator className="w-4 h-4 animate-pulse" />
+            </div>
+            <div className="text-left font-mono">
+              <div className="text-[10px] text-zinc-400 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                <span>RULE SEQUENCER</span>
+              </div>
+              <p className="text-xs font-bold text-white">BASIC (50%) + HRA (40%)</p>
+              <p className="text-[10px] text-emerald-400">GROSS: ₹1,45,000</p>
+            </div>
+          </div>
+
+          {/* Floating Card 2: Top-Right (Auto Compliance Deductions) */}
+          <div className="absolute -top-8 -right-6 z-20 hidden lg:flex items-center gap-3 p-3.5 rounded-2xl bg-zinc-900/95 border border-purple-500/40 shadow-[0_16px_32px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.2)] animate-float-reverse backdrop-blur-xl">
+            <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400">
+              <ShieldCheck className="w-4 h-4" />
+            </div>
+            <div className="text-left">
+              <div className="text-[10px] text-zinc-400 font-mono">STATUTORY COMPLIANCE</div>
+              <p className="text-xs font-bold text-white">EPF (12%) + TDS (5%)</p>
+              <p className="text-[10px] text-purple-400 font-mono">100% Tax Compliant</p>
+            </div>
+          </div>
+
+          {/* Floating Card 3: Bottom-Left (Live Biometric Scanner with Laser) */}
+          <div className="absolute -bottom-8 -left-8 z-20 hidden lg:flex items-center gap-3 p-3.5 rounded-2xl bg-zinc-900/95 border border-blue-500/40 shadow-[0_16px_32px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.2)] animate-float-fast backdrop-blur-xl">
+            <div className="relative w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center overflow-hidden">
+              <Fingerprint className="w-5 h-5 text-blue-400" />
+              {/* Moving Laser Scanner Line */}
+              <div className="absolute inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent animate-scanline" />
+            </div>
+            <div className="text-left font-mono">
+              <div className="text-[10px] text-blue-400 font-bold">BIOMETRIC PUNCH</div>
+              <p className="text-xs font-bold text-white">09:00:12 AM (Active)</p>
+              <p className="text-[10px] text-zinc-400">Overtime: +1.5h Logged</p>
+            </div>
+          </div>
+
+          {/* Floating Card 4: Bottom-Right (Live Salary Disbursement) */}
+          <div className="absolute -bottom-8 -right-8 z-20 hidden lg:flex items-center gap-3 p-3.5 rounded-2xl bg-zinc-900/95 border border-teal-500/40 shadow-[0_16px_32px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.2)] animate-float-slow backdrop-blur-xl">
+            <div className="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-teal-400">
+              <Coins className="w-5 h-5 animate-bounce" />
+            </div>
+            <div className="text-left">
+              <div className="text-[10px] text-zinc-400 font-mono">DIRECT DISBURSEMENT</div>
+              <p className="text-xs font-bold text-white">₹42.85L Batch Paid</p>
+              <p className="text-[10px] text-emerald-400 font-mono">112 Payslips Emailed</p>
+            </div>
+          </div>
+
+          {/* Main Hero Visual Card */}
+          <div className="relative rounded-[2rem] bg-[#0c0f17]/95 border border-white/10 p-5 sm:p-7 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.15)] backdrop-blur-2xl">
             {/* Topbar Bevel */}
             <div className="flex items-center justify-between pb-4 mb-5 border-b border-white/[0.08] text-xs text-zinc-400">
               <div className="flex items-center gap-2">
@@ -189,16 +252,16 @@ export default function LandingPage() {
               </div>
               <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 font-mono text-[10px] font-bold shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                RUNTIME READY
+                REAL-TIME RUNTIME
               </div>
             </div>
 
             {/* 3 Tactile Neumorphic Stat Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/90 border border-white/[0.08] rounded-2xl p-5 shadow-[0_8px_20px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)] hover:border-emerald-500/30 transition-all">
+              <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/90 border border-white/[0.08] rounded-2xl p-5 shadow-[0_8px_20px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)] hover:border-emerald-500/30 transition-all group">
                 <div className="flex items-center justify-between text-zinc-400 text-xs font-semibold">
                   <span>Batch Payroll Total</span>
-                  <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+                  <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] group-hover:scale-110 transition-transform">
                     <CreditCard className="w-4 h-4" />
                   </div>
                 </div>
@@ -209,10 +272,10 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/90 border border-white/[0.08] rounded-2xl p-5 shadow-[0_8px_20px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)] hover:border-blue-500/30 transition-all">
+              <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/90 border border-white/[0.08] rounded-2xl p-5 shadow-[0_8px_20px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)] hover:border-blue-500/30 transition-all group">
                 <div className="flex items-center justify-between text-zinc-400 text-xs font-semibold">
                   <span>Biometric Attendance</span>
-                  <div className="p-2 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+                  <div className="p-2 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] group-hover:scale-110 transition-transform">
                     <Clock className="w-4 h-4" />
                   </div>
                 </div>
@@ -223,10 +286,10 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/90 border border-white/[0.08] rounded-2xl p-5 shadow-[0_8px_20px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)] hover:border-purple-500/30 transition-all">
+              <div className="bg-gradient-to-b from-zinc-900/80 to-zinc-950/90 border border-white/[0.08] rounded-2xl p-5 shadow-[0_8px_20px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)] hover:border-purple-500/30 transition-all group">
                 <div className="flex items-center justify-between text-zinc-400 text-xs font-semibold">
                   <span>Statutory Deductions</span>
-                  <div className="p-2 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+                  <div className="p-2 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] group-hover:scale-110 transition-transform">
                     <ShieldCheck className="w-4 h-4" />
                   </div>
                 </div>
@@ -274,8 +337,56 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 6 Key HR Solutions Grid (Skeuomorphic Dark Cards) */}
-      <section id="solutions" className="py-20 bg-[#05070a]/90 border-y border-white/[0.08] relative z-10">
+      {/* Visual Moving Process Pipeline */}
+      <section id="pipeline" className="py-16 bg-[#05070a]/90 border-y border-white/[0.08] relative z-10 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-12 space-y-3">
+            <span className="text-xs uppercase font-bold tracking-widest px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+              Automated Pipeline
+            </span>
+            <h2 className="font-heading text-3xl sm:text-4xl font-extrabold text-white">
+              Deterministic 4-Stage Execution Flow
+            </h2>
+            <p className="text-zinc-400 text-xs sm:text-sm">
+              Watch how raw employment contracts are transformed into verified, compliant payslips.
+            </p>
+          </div>
+
+          {/* Animated 4-Stage Connector Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 relative">
+            {[
+              { step: "01", title: "Contract & Wage Lock", desc: "Validates base wage, allowances & schedule hours", icon: FileText, color: "text-blue-400", bg: "from-blue-500/10 to-indigo-500/5", border: "border-blue-500/30" },
+              { step: "02", title: "Biometric & LOP Sync", desc: "Aggregates punches, leaves & unworked days", icon: Fingerprint, color: "text-cyan-400", bg: "from-cyan-500/10 to-teal-500/5", border: "border-cyan-500/30" },
+              { step: "03", title: "Sequence Rule Engine", desc: "BASIC → HRA → GROSS → EPF → TDS → NET", icon: Calculator, color: "text-purple-400", bg: "from-purple-500/10 to-pink-500/5", border: "border-purple-500/30" },
+              { step: "04", title: "PDF & Batch Dispatch", desc: "Branded PDF creation & automated SMTP email", icon: Mail, color: "text-emerald-400", bg: "from-emerald-500/10 to-teal-500/5", border: "border-emerald-500/30" },
+            ].map((st, i) => {
+              const Icon = st.icon;
+              return (
+                <div
+                  key={i}
+                  className={`p-5 rounded-3xl bg-gradient-to-b ${st.bg} border ${st.border} shadow-[0_8px_24px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)] relative group hover:-translate-y-1 transition-all`}
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="font-mono text-xs font-bold text-zinc-500">STAGE {st.step}</span>
+                    <div className={`w-8 h-8 rounded-xl bg-zinc-900 border border-white/10 flex items-center justify-center ${st.color}`}>
+                      <Icon className="w-4 h-4" />
+                    </div>
+                  </div>
+                  <h3 className="font-heading text-sm font-bold text-white mb-1.5">{st.title}</h3>
+                  <p className="text-[11px] text-zinc-400 leading-relaxed">{st.desc}</p>
+                  {/* Subtle animated moving laser beam on bottom */}
+                  <div className="mt-4 h-1 w-full bg-zinc-950 rounded-full overflow-hidden relative">
+                    <div className="h-full bg-gradient-to-r from-transparent via-emerald-400 to-transparent w-full animate-laser-beam" />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* 6 Key HR Solutions Grid */}
+      <section id="solutions" className="py-20 bg-[#07090e] relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <span className="text-xs uppercase font-bold tracking-widest px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
@@ -395,7 +506,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Interactive Feature Pipeline (Neumorphic Tabs) */}
+      {/* Interactive Feature Architecture Showcase */}
       <section id="interactive" className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-12 space-y-4">
           <span className="text-xs uppercase font-bold tracking-widest px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
@@ -612,7 +723,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Demo Roles Quick Launch (Skeuomorphic Badges) */}
+      {/* 5 Demo Roles Quick Launch (Skeuomorphic Badges) */}
       <section id="roles" className="py-20 bg-[#05070a]/90 border-t border-white/[0.08] relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
