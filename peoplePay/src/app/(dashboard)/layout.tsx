@@ -74,9 +74,9 @@ export default function DashboardLayout({
   ];
 
   return (
-    <div className="h-screen bg-[#09090b] text-zinc-100 flex font-sans antialiased selection:bg-blue-600/30 selection:text-white overflow-hidden">
-      {/* Sidebar - Fixed in place */}
-      <aside className="w-64 h-full shrink-0 bg-zinc-950/80 border-r border-zinc-800/80 flex flex-col hidden md:flex relative z-30 backdrop-blur-xl">
+    <div className="fixed inset-0 h-screen w-screen bg-[#09090b] text-zinc-100 flex font-sans antialiased selection:bg-blue-600/30 selection:text-white overflow-hidden">
+      {/* Sidebar - Permanently fixed in place */}
+      <aside className="w-64 h-full shrink-0 bg-zinc-950/80 border-r border-zinc-800/80 flex flex-col hidden md:flex z-30 backdrop-blur-xl select-none">
         {/* Brand Header */}
         <div className="h-16 flex items-center px-6 border-b border-zinc-800/60 justify-between shrink-0">
           <Link href="/dashboard" className="flex items-center gap-3 group">
