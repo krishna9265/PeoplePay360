@@ -13,7 +13,9 @@ export interface PayrollKpiSummary {
 export interface DepartmentSalaryCost {
   departmentId: string | null;
   department: string;
+  departmentName?: string;
   totalGrossCost: number;
+  totalSalaryCost?: number;
   totalNetCost: number;
   headcount: number;
 }
@@ -21,9 +23,12 @@ export interface DepartmentSalaryCost {
 export interface MonthlyTrendItem {
   payrunId: string;
   name: string;
+  payrunName?: string;
+  month?: string;
   periodStart: Date;
   periodEnd: Date;
   totalNetSalary: number;
+  totalNetPaid?: number;
   totalGrossSalary: number;
   payslipCount: number;
 }
@@ -127,7 +132,9 @@ export class PayrollAnalyticsService {
     return Array.from(deptMap.values()).map((d) => ({
       departmentId: d.departmentId,
       department: d.departmentName,
+      departmentName: d.departmentName,
       totalGrossCost: Math.round(d.grossCost * 100) / 100,
+      totalSalaryCost: Math.round(d.grossCost * 100) / 100,
       totalNetCost: Math.round(d.netCost * 100) / 100,
       headcount: d.employees.size,
     }));
@@ -140,15 +147,22 @@ export class PayrollAnalyticsService {
       orderBy: { periodStart: "asc" },
     });
 
-    return payruns.map((pr) => ({
-      payrunId: pr.id,
-      name: pr.name,
-      periodStart: pr.periodStart,
-      periodEnd: pr.periodEnd,
-      totalNetSalary: Math.round(pr.payslips.reduce((s, p) => s + Number(p.netTotal), 0) * 100) / 100,
-      totalGrossSalary: Math.round(pr.payslips.reduce((s, p) => s + Number(p.grossTotal), 0) * 100) / 100,
-      payslipCount: pr.payslips.length,
-    }));
+    return payruns.map((pr) => {
+      const netPaid = Math.round(pr.payslips.reduce((s, p) => s + Number(p.netTotal), 0) * 100) / 100;
+      const grossPaid = Math.round(pr.payslips.reduce((s, p) => s + Number(p.grossTotal), 0) * 100) / 100;
+      return {
+        payrunId: pr.id,
+        name: pr.name,
+        payrunName: pr.name,
+        month: new Date(pr.periodStart).toLocaleDateString("en-US", { month: "short", year: "numeric" }),
+        periodStart: pr.periodStart,
+        periodEnd: pr.periodEnd,
+        totalNetSalary: netPaid,
+        totalNetPaid: netPaid,
+        totalGrossSalary: grossPaid,
+        payslipCount: pr.payslips.length,
+      };
+    });
   }
 
   static async getPayrollAlerts(): Promise<{

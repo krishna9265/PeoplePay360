@@ -54,12 +54,15 @@ export interface PayrunInput {
 }
 
 export interface PayslipLineResult {
+  id?: string;
   salaryRuleId: string;
   ruleName: string;
   ruleCode: string;
   category: string;
   sequence: number;
   amount: DecimalValue;
+  salaryRule?: any;
+  categoryObj?: any;
 }
 
 export interface PayrollWarningResult {
@@ -71,9 +74,16 @@ export interface PayrollWarningResult {
 
 export interface ComputedPayslip {
   id?: string;
+  payrunId?: string;
+  periodStart?: Date;
+  periodEnd?: Date;
   employeeId: string;
   employeeName: string;
   employeeEmail?: string | null;
+  employee?: any;
+  payrun?: any;
+  contract?: any;
+  salaryStructure?: any;
   contractId: string;
   salaryStructureId: string;
   period: PayrollPeriod;

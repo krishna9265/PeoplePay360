@@ -435,14 +435,15 @@ export default function PayrollDashboardPage() {
           </div>
 
           <div className="space-y-4 pt-2">
-            {charts.salaryCostByDepartment?.map((dept: any) => {
-              const cost = Number(dept.totalSalaryCost || 0);
+            {charts.salaryCostByDepartment?.map((dept: any, index: number) => {
+              const deptName = dept.departmentName || dept.department || "General";
+              const cost = Number(dept.totalSalaryCost || dept.totalGrossCost || 0);
               const percentage = Math.round((cost / maxDeptCost) * 100);
 
               return (
-                <div key={dept.departmentName} className="space-y-1.5">
+                <div key={dept.departmentId || `${deptName}-${index}`} className="space-y-1.5">
                   <div className="flex justify-between text-xs font-medium">
-                    <span className="text-zinc-200">{dept.departmentName} ({dept.headcount} Staff)</span>
+                    <span className="text-zinc-200">{deptName} ({dept.headcount} Staff)</span>
                     <span className="font-mono text-emerald-400 font-bold">₹{cost.toLocaleString()}</span>
                   </div>
                   <div className="h-3 w-full bg-zinc-950 rounded-full overflow-hidden p-0.5 border border-zinc-800/80">
@@ -477,27 +478,32 @@ export default function PayrollDashboardPage() {
           </div>
 
           <div className="space-y-4 pt-2">
-            {charts.monthlySalaryTrend?.map((pt: any) => (
-              <div
-                key={pt.month}
-                className="flex items-center justify-between p-3.5 rounded-2xl bg-zinc-950/60 border border-zinc-800/80 hover:border-zinc-700 transition"
-              >
-                <div>
-                  <span className="text-xs font-bold text-white font-mono">{pt.month}</span>
-                  <span className="text-[11px] text-zinc-400 block mt-0.5">
-                    {pt.payrunName || "Processed Batch"}
-                  </span>
+            {charts.monthlySalaryTrend?.map((pt: any, index: number) => {
+              const monthLabel = pt.month || (pt.periodStart ? new Date(pt.periodStart).toLocaleDateString("en-US", { month: "short", year: "numeric" }) : "Current");
+              const netAmount = Number(pt.totalNetPaid || pt.totalNetSalary || 0);
+
+              return (
+                <div
+                  key={pt.payrunId || `${monthLabel}-${index}`}
+                  className="flex items-center justify-between p-3.5 rounded-2xl bg-zinc-950/60 border border-zinc-800/80 hover:border-zinc-700 transition"
+                >
+                  <div>
+                    <span className="text-xs font-bold text-white font-mono">{monthLabel}</span>
+                    <span className="text-[11px] text-zinc-400 block mt-0.5">
+                      {pt.payrunName || pt.name || "Processed Batch"}
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-sm font-bold font-mono text-purple-300 block">
+                      ₹{netAmount.toLocaleString()}
+                    </span>
+                    <span className="text-[10px] text-emerald-400 font-semibold uppercase">
+                      Archived Paid
+                    </span>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <span className="text-sm font-bold font-mono text-purple-300 block">
-                    ₹{Number(pt.totalNetPaid || 0).toLocaleString()}
-                  </span>
-                  <span className="text-[10px] text-emerald-400 font-semibold uppercase">
-                    Archived Paid
-                  </span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
 
             {(!charts.monthlySalaryTrend || charts.monthlySalaryTrend.length === 0) && (
               <div className="text-center py-8 text-zinc-500 text-xs">

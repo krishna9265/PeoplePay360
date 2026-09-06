@@ -74,11 +74,11 @@ export default function DashboardLayout({
   ];
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-zinc-100 flex font-sans antialiased selection:bg-blue-600/30 selection:text-white">
-      {/* Sidebar */}
-      <aside className="w-64 bg-zinc-950/80 border-r border-zinc-800/80 flex flex-col hidden md:flex relative z-30 backdrop-blur-xl">
+    <div className="h-screen bg-[#09090b] text-zinc-100 flex font-sans antialiased selection:bg-blue-600/30 selection:text-white overflow-hidden">
+      {/* Sidebar - Fixed in place */}
+      <aside className="w-64 h-full shrink-0 bg-zinc-950/80 border-r border-zinc-800/80 flex flex-col hidden md:flex relative z-30 backdrop-blur-xl">
         {/* Brand Header */}
-        <div className="h-16 flex items-center px-6 border-b border-zinc-800/60 justify-between">
+        <div className="h-16 flex items-center px-6 border-b border-zinc-800/60 justify-between shrink-0">
           <Link href="/dashboard" className="flex items-center gap-3 group">
             <div className="h-9 w-9 bg-gradient-to-tr from-blue-600 via-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20 group-hover:scale-105 transition-transform">
               <Users className="text-white w-5 h-5" />
@@ -132,7 +132,7 @@ export default function DashboardLayout({
         </div>
 
         {/* User Card & Sign Out */}
-        <div className="p-4 border-t border-zinc-800/60 bg-zinc-950/40">
+        <div className="p-4 border-t border-zinc-800/60 bg-zinc-950/40 shrink-0">
           <div className="flex items-center px-2 mb-3">
             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-xs font-bold text-white shadow-md shadow-blue-500/20">
               {session?.user?.email?.[0].toUpperCase() || "U"}
@@ -156,14 +156,14 @@ export default function DashboardLayout({
         </div>
       </aside>
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col relative overflow-hidden">
+      {/* Main Content Area - Scrollable */}
+      <div className="flex-1 flex flex-col h-full min-w-0 relative overflow-hidden">
         {/* Background glow effects */}
         <div className="absolute top-0 right-0 w-[500px] h-[300px] bg-gradient-to-bl from-blue-600/10 via-purple-600/5 to-transparent blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-[400px] h-[250px] bg-gradient-to-tr from-purple-600/10 via-blue-600/5 to-transparent blur-3xl pointer-events-none" />
 
         {/* Topbar */}
-        <header className="h-16 border-b border-zinc-800/60 bg-zinc-950/60 backdrop-blur-xl flex items-center justify-between px-6 sm:px-8 z-20">
+        <header className="h-16 shrink-0 border-b border-zinc-800/60 bg-zinc-950/60 backdrop-blur-xl flex items-center justify-between px-6 sm:px-8 z-20">
           <div className="flex items-center gap-3">
             <span className="text-xs font-mono text-zinc-400 uppercase tracking-wider hidden sm:inline">
               Environment:

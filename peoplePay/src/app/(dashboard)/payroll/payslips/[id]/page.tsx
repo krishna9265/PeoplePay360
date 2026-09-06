@@ -143,7 +143,7 @@ export default function PayslipDetailPage() {
       {/* Top Bar */}
       <div className="flex items-center justify-between flex-wrap gap-4">
         <Link
-          href={`/payroll/payruns/${payslip.payrunId}`}
+          href={payslip?.payrunId ? `/payroll/payruns/${payslip.payrunId}` : `/payroll/payruns`}
           className="text-xs text-zinc-400 hover:text-white flex items-center gap-1.5 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -186,10 +186,10 @@ export default function PayslipDetailPage() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-white tracking-tight">
-                  Payslip: {payslip.employee?.fullName}
+                  Payslip: {payslip.employee?.fullName || payslip.employeeName || "Employee"}
                 </h1>
                 <p className="text-xs text-zinc-400 mt-0.5 font-mono">
-                  Period: {new Date(payslip.periodStart).toLocaleDateString()} – {new Date(payslip.periodEnd).toLocaleDateString()}
+                  Period: {payslip.periodStart ? new Date(payslip.periodStart).toLocaleDateString() : (payslip.period?.start ? new Date(payslip.period.start).toLocaleDateString() : "—")} – {payslip.periodEnd ? new Date(payslip.periodEnd).toLocaleDateString() : (payslip.period?.end ? new Date(payslip.period.end).toLocaleDateString() : "—")}
                 </p>
               </div>
             </div>
@@ -200,7 +200,7 @@ export default function PayslipDetailPage() {
               {payslip.status}
             </span>
             <p className="text-[11px] text-zinc-400 font-mono mt-1">
-              Batch: {payslip.payrun?.name}
+              Batch: {payslip.payrun?.name || payslip.payrunName || "Payrun Batch"}
             </p>
           </div>
         </div>
@@ -209,8 +209,8 @@ export default function PayslipDetailPage() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-5 rounded-2xl bg-zinc-950/60 border border-zinc-800/80 text-xs">
           <div>
             <span className="text-zinc-400 uppercase text-[10px] font-semibold block">Employee</span>
-            <span className="font-bold text-white mt-1 block">{payslip.employee?.fullName}</span>
-            <span className="text-zinc-400 font-mono text-[11px]">{payslip.employee?.workEmail}</span>
+            <span className="font-bold text-white mt-1 block">{payslip.employee?.fullName || payslip.employeeName || "Employee"}</span>
+            <span className="text-zinc-400 font-mono text-[11px]">{payslip.employee?.workEmail || payslip.employeeEmail || "—"}</span>
           </div>
 
           <div>
@@ -220,82 +220,88 @@ export default function PayslipDetailPage() {
           </div>
 
           <div>
-            <span className="text-zinc-400 uppercase text-[10px] font-semibold block">Contract Base Wage</span>
-            <span className="font-mono font-bold text-emerald-400 text-sm mt-1 block">
-              ₹{Number(payslip.contract?.wage || 0).toLocaleString()}
+            <span className="text-zinc-400 uppercase text-[10px] font-semibold block">Worked Days</span>
+            <span className="font-bold text-white mt-1 block font-mono text-sm">
+              {Number(payslip.workedDays || 0)} Days
             </span>
-            <span className="text-zinc-400 text-[11px]">Active Contract</span>
+            <span className="text-zinc-400 text-[11px]">Computed by Schedule</span>
           </div>
 
           <div>
-            <span className="text-zinc-400 uppercase text-[10px] font-semibold block">Worked Days</span>
-            <span className="font-mono font-bold text-white text-sm mt-1 block">
-              {Number(payslip.workedDays)} Days
+            <span className="text-zinc-400 uppercase text-[10px] font-semibold block">Contract</span>
+            <span className="font-bold text-white mt-1 block truncate">
+              {payslip.contract?.name || "Applicable Contract"}
             </span>
-            <span className="text-zinc-400 text-[11px]">From Schedule & Logs</span>
+            <span className="text-zinc-400 text-[11px] font-mono">
+              ₹{Number(payslip.contract?.wage || payslip.grossTotal || 0).toLocaleString()} Base
+            </span>
           </div>
         </div>
 
-        {/* Salary Computation Lines (BR-RULE-001) */}
-        <div className="space-y-4">
+        {/* Salary Rules Table Breakdown (Screen 25) */}
+        <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-300">
-              Salary Computation Lines (BR-RULE-001 Deterministic Pipeline)
+            <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-300 flex items-center gap-2">
+              <Layers className="w-4 h-4 text-purple-400" />
+              Salary Rule Breakdown (Screen 25)
             </h2>
-            <span className="text-xs text-zinc-400 font-mono">
-              Structure: {payslip.salaryStructure?.name}
-            </span>
+            <span className="text-xs font-mono text-zinc-400">Sequence Ordered</span>
           </div>
 
-          <div className="border border-zinc-800 rounded-2xl overflow-hidden bg-zinc-950/40 shadow-inner">
-            <table className="w-full text-left text-xs text-zinc-300">
-              <thead className="bg-zinc-800/50 uppercase text-zinc-400 font-mono">
+          <div className="border border-zinc-800/80 rounded-2xl overflow-hidden bg-zinc-950/40">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-zinc-900/80 text-zinc-400 font-semibold border-b border-zinc-800">
                 <tr>
-                  <th className="px-6 py-3.5">Sequence</th>
+                  <th className="px-6 py-3.5 w-16">Seq</th>
                   <th className="px-6 py-3.5">Rule Name</th>
                   <th className="px-6 py-3.5">Category</th>
                   <th className="px-6 py-3.5 text-right">Computed Amount</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800/40">
-                {payslip.lines?.map((line: any) => {
-                  const isGross = line.category?.name === "Gross";
-                  const isNet = line.category?.name === "Net";
-                  const isDeduction = line.category?.name === "Deductions";
+                {payslip.lines?.map((line: any, index: number) => {
+                  const categoryName = typeof line.category === "string" ? line.category : line.category?.name || "";
+                  const isGross = categoryName === "Gross";
+                  const isNet = categoryName === "Net";
+                  const isDeduction = categoryName === "Deductions";
+                  const ruleName = line.salaryRule?.name || line.ruleName || "Salary Rule";
+                  const ruleCode = line.salaryRule?.code || line.ruleCode || "";
 
                   return (
                     <tr
-                      key={line.id}
+                      key={line.id || `${line.salaryRuleId || ruleCode || 'rule'}-${line.sequence ?? index}`}
                       className={`hover:bg-zinc-800/20 ${
                         isNet ? "bg-emerald-950/10 font-bold" : isGross ? "bg-blue-950/10 font-semibold" : ""
                       }`}
                     >
                       <td className="px-6 py-3.5 font-mono text-zinc-400">
-                        #{line.sequence}
+                        #{line.sequence ?? index + 1}
                       </td>
                       <td className="px-6 py-3.5 font-medium text-white">
                         <div className="flex items-center gap-2">
-                          <span>{line.salaryRule?.name}</span>
-                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-700">
-                            {line.salaryRule?.code}
-                          </span>
+                          <span>{ruleName}</span>
+                          {ruleCode && (
+                            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-700">
+                              {ruleCode}
+                            </span>
+                          )}
                         </div>
                       </td>
                       <td className="px-6 py-3.5">
                         <span
                           className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase ${
-                            line.category?.name === "Basic"
+                            categoryName === "Basic"
                               ? "bg-blue-500/10 text-blue-400"
-                              : line.category?.name === "Allowances"
+                              : categoryName === "Allowances"
                               ? "bg-purple-500/10 text-purple-400"
-                              : line.category?.name === "Gross"
+                              : categoryName === "Gross"
                               ? "bg-indigo-500/10 text-indigo-400"
-                              : line.category?.name === "Deductions"
+                              : categoryName === "Deductions"
                               ? "bg-rose-500/10 text-rose-400"
                               : "bg-emerald-500/10 text-emerald-400"
                           }`}
                         >
-                          {line.category?.name}
+                          {categoryName || "Rule"}
                         </span>
                       </td>
                       <td

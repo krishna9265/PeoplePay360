@@ -105,13 +105,45 @@ export class PrismaPayrollRepository implements PayrollRepository {
   }
 
   async getPayslips(payrunId: string): Promise<ComputedPayslip[]> {
-    const rows = await prisma.payslip.findMany({ where: { payrunId }, include: { employee: true, lines: { include: { salaryRule: true, category: true }, orderBy: { sequence: "asc" } }, warnings: true } });
+    const rows = await prisma.payslip.findMany({
+      where: { payrunId },
+      include: {
+        employee: { include: { department: true } },
+        lines: { include: { salaryRule: true, category: true }, orderBy: { sequence: "asc" } },
+        warnings: true,
+      },
+    });
     return rows.map((row) => ({
       id: row.id,
-      employeeId: row.employeeId, employeeName: row.employee.fullName, employeeEmail: row.employee.workEmail, contractId: row.contractId, salaryStructureId: row.salaryStructureId,
-      period: { start: row.periodStart, end: row.periodEnd }, workedDays: Number(row.workedDays), status: asStatus(row.status), grossTotal: Number(row.grossTotal), netTotal: Number(row.netTotal),
-      lines: row.lines.map((line) => ({ salaryRuleId: line.salaryRuleId, ruleName: line.salaryRule.name, ruleCode: line.salaryRule.code, category: line.category.name, sequence: line.sequence, amount: Number(line.amount) })),
-      warnings: row.warnings.map((warning) => ({ type: warning.type as PayrollWarningResult["type"], severity: warning.severity as PayrollWarningResult["severity"], message: warning.message })),
+      payrunId: row.payrunId,
+      periodStart: row.periodStart,
+      periodEnd: row.periodEnd,
+      employeeId: row.employeeId,
+      employeeName: row.employee.fullName,
+      employeeEmail: row.employee.workEmail,
+      employee: row.employee,
+      contractId: row.contractId,
+      salaryStructureId: row.salaryStructureId,
+      period: { start: row.periodStart, end: row.periodEnd },
+      workedDays: Number(row.workedDays),
+      status: asStatus(row.status),
+      grossTotal: Number(row.grossTotal),
+      netTotal: Number(row.netTotal),
+      lines: row.lines.map((line) => ({
+        id: line.id,
+        salaryRuleId: line.salaryRuleId,
+        ruleName: line.salaryRule.name,
+        ruleCode: line.salaryRule.code,
+        category: line.category.name,
+        salaryRule: line.salaryRule,
+        sequence: line.sequence,
+        amount: Number(line.amount),
+      })),
+      warnings: row.warnings.map((warning) => ({
+        type: warning.type as PayrollWarningResult["type"],
+        severity: warning.severity as PayrollWarningResult["severity"],
+        message: warning.message,
+      })),
     }));
   }
 
@@ -123,7 +155,7 @@ export class PrismaPayrollRepository implements PayrollRepository {
     const rows = await prisma.payslip.findMany({
       where,
       include: {
-        employee: true,
+        employee: { include: { department: true } },
         payrun: true,
         salaryStructure: true,
       },
@@ -134,6 +166,8 @@ export class PrismaPayrollRepository implements PayrollRepository {
       employeeId: r.employeeId,
       employeeName: r.employee.fullName,
       employeeEmail: r.employee.workEmail,
+      employee: r.employee,
+      payrun: r.payrun,
       payrunId: r.payrunId,
       payrunName: r.payrun.name,
       salaryStructureId: r.salaryStructureId,
@@ -151,7 +185,10 @@ export class PrismaPayrollRepository implements PayrollRepository {
     const row = await prisma.payslip.findUnique({
       where: { id },
       include: {
-        employee: true,
+        employee: { include: { department: true } },
+        payrun: true,
+        contract: true,
+        salaryStructure: true,
         lines: { include: { salaryRule: true, category: true }, orderBy: { sequence: "asc" } },
         warnings: true,
       },
@@ -160,7 +197,10 @@ export class PrismaPayrollRepository implements PayrollRepository {
       const fallback = await prisma.payslip.findFirst({
         where: { employeeId: id },
         include: {
-          employee: true,
+          employee: { include: { department: true } },
+          payrun: true,
+          contract: true,
+          salaryStructure: true,
           lines: { include: { salaryRule: true, category: true }, orderBy: { sequence: "asc" } },
           warnings: true,
         },
@@ -169,34 +209,74 @@ export class PrismaPayrollRepository implements PayrollRepository {
       if (!fallback) return null;
       return {
         id: fallback.id,
+        payrunId: fallback.payrunId,
+        periodStart: fallback.periodStart,
+        periodEnd: fallback.periodEnd,
         employeeId: fallback.employeeId,
         employeeName: fallback.employee.fullName,
         employeeEmail: fallback.employee.workEmail,
+        employee: fallback.employee,
+        payrun: fallback.payrun,
+        contract: fallback.contract,
         contractId: fallback.contractId,
         salaryStructureId: fallback.salaryStructureId,
+        salaryStructure: fallback.salaryStructure,
         period: { start: fallback.periodStart, end: fallback.periodEnd },
         workedDays: Number(fallback.workedDays),
         status: asStatus(fallback.status),
         grossTotal: Number(fallback.grossTotal),
         netTotal: Number(fallback.netTotal),
-        lines: fallback.lines.map((line) => ({ salaryRuleId: line.salaryRuleId, ruleName: line.salaryRule.name, ruleCode: line.salaryRule.code, category: line.category.name, sequence: line.sequence, amount: Number(line.amount) })),
-        warnings: fallback.warnings.map((warning) => ({ type: warning.type as PayrollWarningResult["type"], severity: warning.severity as PayrollWarningResult["severity"], message: warning.message })),
+        lines: fallback.lines.map((line) => ({
+          id: line.id,
+          salaryRuleId: line.salaryRuleId,
+          ruleName: line.salaryRule.name,
+          ruleCode: line.salaryRule.code,
+          category: line.category.name,
+          salaryRule: line.salaryRule,
+          sequence: line.sequence,
+          amount: Number(line.amount),
+        })),
+        warnings: fallback.warnings.map((warning) => ({
+          type: warning.type as PayrollWarningResult["type"],
+          severity: warning.severity as PayrollWarningResult["severity"],
+          message: warning.message,
+        })),
       };
     }
     return {
       id: row.id,
+      payrunId: row.payrunId,
+      periodStart: row.periodStart,
+      periodEnd: row.periodEnd,
       employeeId: row.employeeId,
       employeeName: row.employee.fullName,
       employeeEmail: row.employee.workEmail,
+      employee: row.employee,
+      payrun: row.payrun,
+      contract: row.contract,
       contractId: row.contractId,
       salaryStructureId: row.salaryStructureId,
+      salaryStructure: row.salaryStructure,
       period: { start: row.periodStart, end: row.periodEnd },
       workedDays: Number(row.workedDays),
       status: asStatus(row.status),
       grossTotal: Number(row.grossTotal),
       netTotal: Number(row.netTotal),
-      lines: row.lines.map((line) => ({ salaryRuleId: line.salaryRuleId, ruleName: line.salaryRule.name, ruleCode: line.salaryRule.code, category: line.category.name, sequence: line.sequence, amount: Number(line.amount) })),
-      warnings: row.warnings.map((warning) => ({ type: warning.type as PayrollWarningResult["type"], severity: warning.severity as PayrollWarningResult["severity"], message: warning.message })),
+      lines: row.lines.map((line) => ({
+        id: line.id,
+        salaryRuleId: line.salaryRuleId,
+        ruleName: line.salaryRule.name,
+        ruleCode: line.salaryRule.code,
+        category: line.category.name,
+        salaryRule: line.salaryRule,
+        sequence: line.sequence,
+        amount: Number(line.amount),
+      })),
+      warnings: row.warnings.map((warning) => ({
+        type: warning.type as PayrollWarningResult["type"],
+        severity: warning.severity as PayrollWarningResult["severity"],
+        message: warning.message,
+      })),
     };
   }
 }
