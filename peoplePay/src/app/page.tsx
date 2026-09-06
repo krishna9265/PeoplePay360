@@ -31,7 +31,8 @@ import {
   Smartphone,
   ChevronDown,
   Cpu,
-  Fingerprint
+  Fingerprint,
+  Briefcase
 } from "lucide-react";
 
 export default function LandingPage() {
@@ -626,50 +627,77 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Role 1: HR Payroll Manager */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Role 1: System Administrator */}
+            <div className="bg-gradient-to-b from-zinc-900/90 to-zinc-950/90 border border-white/[0.08] hover:border-amber-500/50 rounded-3xl p-6 shadow-[0_12px_32px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.12)] transition-all flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="px-3 py-1 rounded-full bg-amber-500/10 text-amber-300 text-[10px] font-bold border border-amber-500/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+                    SUPER ADMIN
+                  </span>
+                  <Award className="w-5 h-5 text-amber-400" />
+                </div>
+                <h3 className="font-heading text-lg font-bold text-white">System Administrator</h3>
+                <p className="text-xs text-zinc-400 mt-2">
+                  Full system control over all companies, working schedules, database structures, and platform settings.
+                </p>
+                <div className="mt-4 p-3 rounded-2xl bg-zinc-950 border border-white/[0.06] text-[11px] font-mono text-zinc-400 space-y-1 shadow-[inset_0_2px_6px_rgba(0,0,0,0.5)]">
+                  <div>Email: <span className="text-amber-300">admin@peoplepay360.demo</span></div>
+                  <div>Pass: <span className="text-white">2305 / Admin@123</span></div>
+                </div>
+              </div>
+              <Link
+                href="/login"
+                className="mt-6 w-full py-3 bg-gradient-to-b from-amber-400 to-orange-700 hover:brightness-110 text-zinc-950 font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-[0_4px_12px_rgba(245,158,11,0.3),inset_0_1px_0_rgba(255,255,255,0.4)] transition-all cursor-pointer"
+              >
+                Sign In as Admin
+                <ChevronRight className="w-4 h-4" />
+              </Link>
+            </div>
+
+            {/* Role 2: HR Payroll Manager */}
             <div className="bg-gradient-to-b from-zinc-900/90 to-zinc-950/90 border border-white/[0.08] hover:border-emerald-500/50 rounded-3xl p-6 shadow-[0_12px_32px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.12)] transition-all flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-bold border border-emerald-500/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
-                    FULL ACCESS
+                    PAYROLL LEAD
                   </span>
-                  <Award className="w-5 h-5 text-emerald-400" />
+                  <ShieldCheck className="w-5 h-5 text-emerald-400" />
                 </div>
                 <h3 className="font-heading text-lg font-bold text-white">HR Payroll Manager</h3>
                 <p className="text-xs text-zinc-400 mt-2">
-                  Full control over payruns, salary structures, rule formulas, batch approvals, and PDF email dispatch.
+                  Full control over payrun batches, salary rule formulas, batch approvals, and PDF email dispatch.
                 </p>
                 <div className="mt-4 p-3 rounded-2xl bg-zinc-950 border border-white/[0.06] text-[11px] font-mono text-zinc-400 space-y-1 shadow-[inset_0_2px_6px_rgba(0,0,0,0.5)]">
-                  <div>Email: <span className="text-emerald-400">admin@peoplepay360.com</span></div>
-                  <div>Pass: <span className="text-white">Admin@123 (or 2305)</span></div>
+                  <div>Email: <span className="text-emerald-400">payroll.manager@peoplepay360.demo</span></div>
+                  <div>Pass: <span className="text-white">2305 / Admin@123</span></div>
                 </div>
               </div>
               <Link
                 href="/login"
                 className="mt-6 w-full py-3 bg-gradient-to-b from-emerald-400 to-teal-700 hover:brightness-110 text-zinc-950 font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-[0_4px_12px_rgba(16,185,129,0.3),inset_0_1px_0_rgba(255,255,255,0.4)] transition-all cursor-pointer"
               >
-                Sign In as HR Manager
+                Sign In as Payroll Manager
                 <ChevronRight className="w-4 h-4" />
               </Link>
             </div>
 
-            {/* Role 2: HR Operations Officer */}
+            {/* Role 3: HR Operations Officer */}
             <div className="bg-gradient-to-b from-zinc-900/90 to-zinc-950/90 border border-white/[0.08] hover:border-blue-500/50 rounded-3xl p-6 shadow-[0_12px_32px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.12)] transition-all flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <span className="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-[10px] font-bold border border-blue-500/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
-                    OPERATIONS
+                    CORE HR
                   </span>
-                  <Users className="w-5 h-5 text-blue-400" />
+                  <Briefcase className="w-5 h-5 text-blue-400" />
                 </div>
-                <h3 className="font-heading text-lg font-bold text-white">HR Officer / Operations</h3>
+                <h3 className="font-heading text-lg font-bold text-white">HR Operations Officer</h3>
                 <p className="text-xs text-zinc-400 mt-2">
                   Employee contract creation, attendance management, leave approvals, and work schedule allocations.
                 </p>
                 <div className="mt-4 p-3 rounded-2xl bg-zinc-950 border border-white/[0.06] text-[11px] font-mono text-zinc-400 space-y-1 shadow-[inset_0_2px_6px_rgba(0,0,0,0.5)]">
-                  <div>Email: <span className="text-blue-400">hr@peoplepay360.com</span></div>
-                  <div>Pass: <span className="text-white">Admin@123 (or 2305)</span></div>
+                  <div>Email: <span className="text-blue-400">hr.manager@peoplepay360.demo</span></div>
+                  <div>Pass: <span className="text-white">2305 / Admin@123</span></div>
                 </div>
               </div>
               <Link
@@ -681,27 +709,54 @@ export default function LandingPage() {
               </Link>
             </div>
 
-            {/* Role 3: Employee */}
+            {/* Role 4: HR Payroll User */}
             <div className="bg-gradient-to-b from-zinc-900/90 to-zinc-950/90 border border-white/[0.08] hover:border-purple-500/50 rounded-3xl p-6 shadow-[0_12px_32px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.12)] transition-all flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <span className="px-3 py-1 rounded-full bg-purple-500/10 text-purple-400 text-[10px] font-bold border border-purple-500/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+                    SPECIALIST
+                  </span>
+                  <Users className="w-5 h-5 text-purple-400" />
+                </div>
+                <h3 className="font-heading text-lg font-bold text-white">HR Payroll User</h3>
+                <p className="text-xs text-zinc-400 mt-2">
+                  Draft payrun generation, employee data verification, salary calculation reviews, and slip validation.
+                </p>
+                <div className="mt-4 p-3 rounded-2xl bg-zinc-950 border border-white/[0.06] text-[11px] font-mono text-zinc-400 space-y-1 shadow-[inset_0_2px_6px_rgba(0,0,0,0.5)]">
+                  <div>Email: <span className="text-purple-400">payroll.user@peoplepay360.demo</span></div>
+                  <div>Pass: <span className="text-white">2305 / Admin@123</span></div>
+                </div>
+              </div>
+              <Link
+                href="/login"
+                className="mt-6 w-full py-3 bg-gradient-to-b from-purple-500 to-indigo-800 hover:brightness-110 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-[0_4px_12px_rgba(168,85,247,0.3),inset_0_1px_0_rgba(255,255,255,0.3)] transition-all cursor-pointer"
+              >
+                Sign In as Payroll User
+                <ChevronRight className="w-4 h-4" />
+              </Link>
+            </div>
+
+            {/* Role 5: Employee Self-Service */}
+            <div className="bg-gradient-to-b from-zinc-900/90 to-zinc-950/90 border border-white/[0.08] hover:border-cyan-500/50 rounded-3xl p-6 shadow-[0_12px_32px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.12)] transition-all flex flex-col justify-between md:col-span-2 lg:col-span-1">
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 text-[10px] font-bold border border-cyan-500/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
                     SELF SERVICE
                   </span>
-                  <Smartphone className="w-5 h-5 text-purple-400" />
+                  <Smartphone className="w-5 h-5 text-cyan-400" />
                 </div>
                 <h3 className="font-heading text-lg font-bold text-white">Employee Self-Service</h3>
                 <p className="text-xs text-zinc-400 mt-2">
                   Personal payslip PDF downloads, real-time clock-in/out attendance widget, and instant leave requests.
                 </p>
                 <div className="mt-4 p-3 rounded-2xl bg-zinc-950 border border-white/[0.06] text-[11px] font-mono text-zinc-400 space-y-1 shadow-[inset_0_2px_6px_rgba(0,0,0,0.5)]">
-                  <div>Email: <span className="text-purple-400">employee@peoplepay360.com</span></div>
-                  <div>Pass: <span className="text-white">Admin@123 (or 2305)</span></div>
+                  <div>Email: <span className="text-cyan-400">employee@peoplepay360.demo</span></div>
+                  <div>Pass: <span className="text-white">2305 / Admin@123</span></div>
                 </div>
               </div>
               <Link
                 href="/login"
-                className="mt-6 w-full py-3 bg-gradient-to-b from-purple-500 to-indigo-800 hover:brightness-110 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-[0_4px_12px_rgba(168,85,247,0.3),inset_0_1px_0_rgba(255,255,255,0.3)] transition-all cursor-pointer"
+                className="mt-6 w-full py-3 bg-gradient-to-b from-cyan-500 to-teal-800 hover:brightness-110 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-[0_4px_12px_rgba(6,182,212,0.3),inset_0_1px_0_rgba(255,255,255,0.3)] transition-all cursor-pointer"
               >
                 Sign In as Employee
                 <ChevronRight className="w-4 h-4" />
