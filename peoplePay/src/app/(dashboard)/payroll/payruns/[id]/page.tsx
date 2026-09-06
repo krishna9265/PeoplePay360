@@ -378,7 +378,14 @@ export default function PayrunProcessingPage() {
                         {ps.employee?.jobPosition}
                       </span>
                     </td>
-                    <td className="px-5 py-3.5 font-mono text-zinc-300">{Number(ps.workedDays)} Days</td>
+                    <td className="px-5 py-3.5 font-mono text-zinc-300">
+                      <div>{Number(ps.workedDays)} Days</div>
+                      {Number((ps as any).unpaidLeaveDays || 0) > 0 && (
+                        <span className="text-[10px] font-semibold text-rose-400 bg-rose-500/10 px-1.5 py-0.5 rounded border border-rose-500/20 inline-block mt-0.5">
+                          {Number((ps as any).unpaidLeaveDays)}d Unpaid LOP
+                        </span>
+                      )}
+                    </td>
                     <td className="px-5 py-3.5 font-mono text-zinc-200">₹{Number(ps.grossTotal).toLocaleString()}</td>
                     <td className="px-5 py-3.5 font-mono font-bold text-emerald-400">
                       ₹{Number(ps.netTotal).toLocaleString()}

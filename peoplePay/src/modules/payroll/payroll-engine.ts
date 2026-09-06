@@ -30,7 +30,7 @@ export function computeEmployeePayslip(input: {
     : [];
   return {
     employeeId: employee.id, employeeName: employee.fullName, employeeEmail: employee.workEmail, contractId: contract.id,
-    salaryStructureId: payrun.salaryStructure.id, period: payrun.period, workedDays, status: "Computed",
+    salaryStructureId: payrun.salaryStructure.id, period: payrun.period, workedDays, unpaidLeaveDays, status: "Computed",
     grossTotal: totalForCategory(lines, "gross"), netTotal: totalForCategory(lines, "net"), lines, warnings,
   };
 }

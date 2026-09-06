@@ -62,6 +62,7 @@ export class PrismaPayrollRepository implements PayrollRepository {
           data: {
             payrunId, employeeId: payslip.employeeId, contractId: payslip.contractId, salaryStructureId: payslip.salaryStructureId,
             periodStart: payslip.period.start, periodEnd: payslip.period.end, workedDays: payslip.workedDays,
+            unpaidLeaveDays: payslip.unpaidLeaveDays ?? 0,
             status: payslip.status, grossTotal: payslip.grossTotal, netTotal: payslip.netTotal,
             lines: { create: payslip.lines.map((line) => ({ sequence: line.sequence, amount: line.amount, salaryRuleId: line.salaryRuleId, categoryId: categories.get(line.salaryRuleId)! })) },
             warnings: { create: payslip.warnings.map((warning) => ({ type: warning.type, severity: warning.severity, message: warning.message })) },
@@ -73,7 +74,7 @@ export class PrismaPayrollRepository implements PayrollRepository {
 
   async replaceWarnings(payrunId: string, warnings: PayrollWarningResult[]): Promise<void> {
     // Payslip warnings are written with their Payslip. These are batch-level warnings such as missing contracts.
-    await prisma.payrollWarning.createMany({ data: warnings.filter((warning) => warning.type === "missing_contract" || warning.type === "multiple_contracts" || warning.type === "duplicate_payslip").map((warning) => ({ payrunId, type: warning.type, severity: warning.severity, message: warning.message })) });
+    await prisma.payrollWarning.createMany({ data: warnings.filter((warning) => warning.type === "missing_contract" || warning.type === "multiple_contracts" || warning.type === "duplicate_payslip" || warning.type === "structure_mismatch").map((warning) => ({ payrunId, type: warning.type, severity: warning.severity, message: warning.message })) });
   }
 
   async updatePayrunStatus(payrunId: string, status: PayrunStatus): Promise<void> {
@@ -126,6 +127,7 @@ export class PrismaPayrollRepository implements PayrollRepository {
       salaryStructureId: row.salaryStructureId,
       period: { start: row.periodStart, end: row.periodEnd },
       workedDays: Number(row.workedDays),
+      unpaidLeaveDays: Number((row as any).unpaidLeaveDays ?? 0),
       status: asStatus(row.status),
       grossTotal: Number(row.grossTotal),
       netTotal: Number(row.netTotal),
@@ -175,6 +177,7 @@ export class PrismaPayrollRepository implements PayrollRepository {
       periodStart: r.periodStart,
       periodEnd: r.periodEnd,
       workedDays: Number(r.workedDays),
+      unpaidLeaveDays: Number((r as any).unpaidLeaveDays ?? 0),
       status: asStatus(r.status),
       grossTotal: Number(r.grossTotal),
       netTotal: Number(r.netTotal),
@@ -223,6 +226,7 @@ export class PrismaPayrollRepository implements PayrollRepository {
         salaryStructure: fallback.salaryStructure,
         period: { start: fallback.periodStart, end: fallback.periodEnd },
         workedDays: Number(fallback.workedDays),
+        unpaidLeaveDays: Number((fallback as any).unpaidLeaveDays ?? 0),
         status: asStatus(fallback.status),
         grossTotal: Number(fallback.grossTotal),
         netTotal: Number(fallback.netTotal),
@@ -259,6 +263,7 @@ export class PrismaPayrollRepository implements PayrollRepository {
       salaryStructure: row.salaryStructure,
       period: { start: row.periodStart, end: row.periodEnd },
       workedDays: Number(row.workedDays),
+      unpaidLeaveDays: Number((row as any).unpaidLeaveDays ?? 0),
       status: asStatus(row.status),
       grossTotal: Number(row.grossTotal),
       netTotal: Number(row.netTotal),

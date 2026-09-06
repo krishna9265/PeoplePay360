@@ -66,7 +66,7 @@ export interface PayslipLineResult {
 }
 
 export interface PayrollWarningResult {
-  type: "missing_contract" | "multiple_contracts" | "duplicate_payslip" | "missing_bank_details";
+  type: "missing_contract" | "multiple_contracts" | "duplicate_payslip" | "missing_bank_details" | "structure_mismatch";
   severity: "Blocking" | "Non-blocking";
   message: string;
   employeeId?: string;
@@ -88,6 +88,7 @@ export interface ComputedPayslip {
   salaryStructureId: string;
   period: PayrollPeriod;
   workedDays: DecimalValue;
+  unpaidLeaveDays?: DecimalValue;
   status: PayslipStatus;
   grossTotal: DecimalValue;
   netTotal: DecimalValue;
